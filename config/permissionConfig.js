@@ -3,4 +3,9 @@ const userStatus = {
     notConfirmed: "not-confirmed",
 };
 
-module.exports = { userStatus };
+const userRoles = {
+    admin: "admin",
+    superAdmin: "superAdmin",
+};
+
+module.exports = { userStatus , userRoles };

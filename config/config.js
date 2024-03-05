@@ -27,6 +27,6 @@ config.wordMimeType =
 config.svgMimeType = 'image/svg+xml'
 config.jsonMimeType = 'application/json'
 
-config.role_types = { student: 'user', teacher: "teacher", admin: 'admin' }
+config.role_types = { student: 'student', teacher: "teacher", admin: 'admin' }
 
 module.exports = config
