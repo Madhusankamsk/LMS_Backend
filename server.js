@@ -14,6 +14,7 @@ const serverPort = config.web_port;
 server.use("/api", require("./routes"));
 
 // Database Connection initiation
+const { isProduction } = config;
 if (isProduction) {
     mongoose.connect(`mongodb:${config.database}`, {
       useUnifiedTopology: true,
@@ -25,8 +26,6 @@ if (isProduction) {
       useNewUrlParser: true,
     });
     mongoose.set("debug", true);
-    mongoose.set("useCreateIndex", true);
-    mongoose.set("useFindAndModify", false);
   }
 
   const httpServer = http.createServer(server);

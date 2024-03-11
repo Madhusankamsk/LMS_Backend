@@ -1,11 +1,6 @@
 const UserModel = require('./user.model')
 const { getUserRolesById } = require('../user-role/user-role.service')
 
-
-
-
-
-
 module.exports.getUserById = async (body) => {
     const user = await repository.findOne(UserModel, {
         _id: mongoose.Types.ObjectId(body.id),
