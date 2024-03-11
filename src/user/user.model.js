@@ -15,7 +15,7 @@ const schema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        secound_name: {
+        last_name: {
             type: String,
             required: true,
         },
@@ -109,7 +109,7 @@ schema.methods.setPassword = function (password) {
     this.password = `${salt}$${hash}`;
 }
 
-schema.index({ email: 1, phone: 1 }); // Indexing
+schema.index({ email: 1, school: 1 }); // Indexing
 
 // create modal
 const model = mongoose.model("user", schema);
