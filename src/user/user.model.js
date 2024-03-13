@@ -19,9 +19,6 @@ const schema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        birthday: {
-            type: Date,
-        },
         profile_picture: {
             type: String,
         },
@@ -35,34 +32,10 @@ const schema = new mongoose.Schema(
             trim: true,
             required: true,
         },
-        is_first_time: {
-            type: Boolean,
-            default: true,
-        },
-        course: {
-            type: [
-                {
-                    id: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        required: true,
-                    },
-                },
-            ],
-        },
-        paper: {
-            type: [
-                {
-                    id: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        required: true,
-                    },
-                },
-            ],
-        },
-        school: {
+        address: {
             type: String,
         },
-        Shy: {
+        school: {
             type: String,
         },
         grade: {
@@ -71,6 +44,11 @@ const schema = new mongoose.Schema(
         role: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user_role",
+            required: true,
+        },
+        enroll: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user_enroll",
             required: true,
         },
         status: {

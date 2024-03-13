@@ -6,23 +6,27 @@ const passwordValidation = joi
     .string()
     .min(8)
     .regex(/^\S+$/)
-    .required()
     .messages({
         'string.min': 'Password must be at least 8 characters long',
         'string.pattern.base': 'Password must not contain spaces',
     })
 
 module.exports.createUser = joi.object().keys({
-    name: joi.string().required(),
-    age: joi.number().required(),
-    nic: joi.string().required().max(10).min(10),
-    address: joi.string(),
     email: joi
         .string()
         .email({ tlds: { allow: false } })
         .required(),
+    first_name: joi.string().required(),
+    last_name: joi.string().required(),
+    profile_picture: joi.string(),
     phone: joi.string().length(10).required(),
+    password: passwordValidation,
+    address: joi.string(),
+    school: joi.string(),
+    grade: joi.string(),
     role: joi.string().required().max(24).min(24),
+    enroll: joi.string().required().max(24).min(24),
+    nic: joi.string().required().max(10).min(10),
 })
 
 module.exports.loginUser = joi.object().keys({

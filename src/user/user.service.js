@@ -1,6 +1,10 @@
 const UserModel = require('./user.model')
 const { getUserRolesById } = require('../user-role/user-role.service')
 
+const {
+    createUserMail,
+} = require('../../mails/mails.service')
+
 module.exports.getUserById = async (body) => {
     const user = await repository.findOne(UserModel, {
         _id: mongoose.Types.ObjectId(body.id),
@@ -18,6 +22,34 @@ module.exports.getUserByEmail = async (email, filterActive = true) => {
     if (!filterActive) delete filter.is_active
 
     return repository.findOne(UserModel, filter)
+}
+
+module.exports.getUserByIDWithRole = async (id) => {
+    const filter = {
+        _id: mongoose.Types.ObjectId(id),
+    }
+
+    const user = await repository.findByAggregateQuery(UserModel, [
+        {
+            $match: filter,
+        },
+        {
+            $lookup: {
+                from: 'user_roles',
+                localField: 'role',
+                foreignField: '_id',
+                as: 'user_role',
+            },
+        },
+        {
+            $addFields: {
+                role: { $arrayElemAt: ['$user_role.role', 0] },
+                user_role: { $arrayElemAt: ['$user_role', 0] },
+            },
+        },
+    ])
+
+    return user[0]
 }
 
 module.exports.getUserByNic = async (nic, filterActive = true) => {
@@ -52,11 +84,6 @@ module.exports.createUser = async (body) => {
         throw new Error('Email already exists.')
     }
 
-    const existingNic = await this.getUserByNic(body.nic, false)
-    if (existingNic) {
-        throw new Error('Nic number already exists.')
-    }
-
     const existingPhone = await this.getUserByPhoneNumber(body.phone, false)
     if (existingPhone) {
         throw new Error('Phone number already exists.')
@@ -70,21 +97,17 @@ module.exports.createUser = async (body) => {
     if (!exisingRole.is_allowed) {
         throw new Error('This role has been disabled ')
     }
-    const password = generator.generate({
-        length: 10,
-        numbers: true,
-    })
-
+    
     let newUser = new UserModel(body)
-    newUser.setPassword(password)
-    // console.log(newUser);
     await repository.save(newUser)
 
     newUser = newUser.toObject()
     delete newUser.password
 
+    const fullName = newUser.first_name + " " + newUser.last_name;
+
     await createUserMail({
-        name: newUser.name,
+        name: fullName,
         to: newUser.email,
         new_password: password,
         subject: 'Congratulations! Your account has been created',

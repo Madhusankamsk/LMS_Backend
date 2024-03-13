@@ -9,7 +9,7 @@ const { permissions } = require('./user.permission')
 router.route(permissions.usersCreate.path).post(
     validator.validateHeader(),
     validator.validateRouteAccessByRole({
-        baseRoute: '/users',
+        baseRoute: '/user',
         action: 'add',
     }),
     validator.validateBody(schema.createUser),
@@ -19,7 +19,7 @@ router.route(permissions.usersCreate.path).post(
 router.route(permissions.usersUpdate.path).put(
     validator.validateHeader(),
     validator.validateRouteAccessByRole({
-        baseRoute: '/users',
+        baseRoute: '/user',
         action: 'edit',
     }),
     validator.validateBody(schema.updateUser),
@@ -29,7 +29,7 @@ router.route(permissions.usersUpdate.path).put(
 router.route(permissions.blockUser.path).post(
     validator.validateHeader(),
     validator.validateRouteAccessByRole({
-        baseRoute: '/users',
+        baseRoute: '/user',
         action: 'block',
     }),
     validator.validateBody(schema.blockUser),
@@ -39,7 +39,7 @@ router.route(permissions.blockUser.path).post(
 router.route(permissions.userPasswordResetAdmin.path).post(
     validator.validateHeader(),
     validator.validateRouteAccessByRole({
-        baseRoute: '/users',
+        baseRoute: '/user',
         action: 'reset_password',
     }),
     validator.validateBody(schema.passwordResetAdmin),
@@ -49,7 +49,7 @@ router.route(permissions.userPasswordResetAdmin.path).post(
 router.route(permissions.deleteUser.path).post(
     validator.validateHeader(permissions.deleteUser.granted),
     validator.validateRouteAccessByRole({
-        baseRoute: '/users',
+        baseRoute: '/user',
         action: 'delete',
     }),
     validator.validateBody(schema.deleteUser),
