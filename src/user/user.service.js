@@ -1,9 +1,9 @@
 const UserModel = require('./user.model')
 const { getUserRolesById } = require('../user-role/user-role.service')
 
-const {
-    createUserMail,
-} = require('../../mails/mails.service')
+// const {
+//     createUserMail,
+// } = require('../../mails/mails.service')
 
 module.exports.getUserById = async (body) => {
     const user = await repository.findOne(UserModel, {
