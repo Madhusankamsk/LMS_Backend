@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const { pathOr } = require('ramda')
 
 const repository = require('../../services/repositoryService')
-const UserRoleModel = require('./user-role.model')
+const PaperModel = require('./paper.model')
 const sortingConfig = require('../../config/sort.config')
 const { superAdmin } = require('../../config/permissionConfig').userRoles
 
@@ -13,8 +13,8 @@ const { setLimitToPositiveValue } = require('../../services/commonService')
 const { includeExcludeFields } = require('../../services/queryService')
 const config = require('../../config/config')
 
-module.exports.createUserRole = async (body) => {
-    const exisingRole = await repository.findOne(UserRoleModel, {
+module.exports.createPaper = async (body) => {
+    const exisingRole = await repository.findOne( PaperModel, {
         role: body.role,
     })
 
@@ -27,7 +27,7 @@ module.exports.createUserRole = async (body) => {
     return data
 }
 
-module.exports.updateUserRole = async (body) => {
+module.exports.updatePaper = async (body) => {
     const { routes, role, is_allowed, _id } = body
     let deleteRoutes = []
     let updateRoutes = []
@@ -159,7 +159,7 @@ module.exports.updateUserRole = async (body) => {
     return returnResult
 }
 
-module.exports.getUserRoles = async (body) => {
+module.exports.getPaper = async (body) => {
     const { limit, order, page, search, exclude = [], admin } = body
 
     const column = body.column || -1
@@ -261,55 +261,3 @@ module.exports.getUserRoles = async (body) => {
     }
 }
 
-// module.exports.getUserRolesById = async (id) => {
-//     console.log("a");
-//     const matchQuery = {
-//         //_id: mongoose.Types.ObjectId(id),
-//         role: {
-//             $ne: superAdmin,
-//         },
-//     }
-//     console.log("b");
-
-//     const userRoles = await repository.findByAggregateQuery(UserRoleModel, [
-//         {
-//             $match: matchQuery,
-//         },
-//     ])
-//     return userRoles[0]
-// }
-
-module.exports.getUserRolesById = async (id) => {
-    console.log("a");
-    const matchQuery = {
-        _id: new mongoose.Types.ObjectId(id), // Correctly using 'new' keyword
-        role: {
-            $ne: superAdmin,
-        },
-    }
-    console.log("b");
-
-    const userRoles = await repository.findByAggregateQuery(UserRoleModel, [
-        {
-            $match: matchQuery,
-        },
-    ])
-    return userRoles[0]
-}
-
-
-
-module.exports.toggleBlock = async (body) => {
-    const { _id } = body
-    const existingRole = await this.getUserRolesById(_id)
-    if (!existingRole) {
-        throw new Error('Role not found')
-    }
-    await this.updateUserRole({
-        is_allowed: !existingRole.is_allowed,
-        // eslint-disable-next-line object-shorthand
-        _id: _id,
-        role: existingRole.role,
-    })
-    return 'success'
-}

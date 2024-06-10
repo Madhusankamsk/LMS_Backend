@@ -7,11 +7,11 @@ const router = express.Router()
 const { permissions } = require('./user.permission')
 
 router.route(permissions.usersCreate.path).post(
-    validator.validateHeader(),
-    validator.validateRouteAccessByRole({
-        baseRoute: '/user',
-        action: 'add',
-    }),
+    // validator.validateHeader(),
+    // validator.validateRouteAccessByRole({
+    //     baseRoute: '/user',
+    //     action: 'add',
+    // }),
     validator.validateBody(schema.createUser),
     controller.createUser
 )

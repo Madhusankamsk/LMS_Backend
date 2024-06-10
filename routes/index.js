@@ -12,5 +12,7 @@ router.use(
 );
 
 router.use("/user", require("../src/user/user.router"));
+router.use("/user_role", require("../src/user-role/user-role.router"));
+router.use("/paper", require("../src/paper/paper.router"));
 
 module.exports = router;

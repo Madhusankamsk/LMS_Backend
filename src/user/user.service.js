@@ -1,5 +1,6 @@
 const UserModel = require('./user.model')
 const { getUserRolesById } = require('../user-role/user-role.service')
+const repository = require('../../services/repositoryService')
 
 // const {
 //     createUserMail,
@@ -79,39 +80,48 @@ module.exports.getUserByPhoneNumber = async (phone, filterActive = true) => {
 
 
 module.exports.createUser = async (body) => {
+    console.log("1");
     const existingUser = await this.getUserByEmail(body.email, false)
     if (existingUser) {
         throw new Error('Email already exists.')
     }
+    console.log("2");
 
     const existingPhone = await this.getUserByPhoneNumber(body.phone, false)
     if (existingPhone) {
         throw new Error('Phone number already exists.')
     }
+    console.log("3");
 
     const exisingRole = await getUserRolesById(body.role)
     if (!exisingRole) {
         throw new Error('invalid role')
     }
+    console.log("4");
 
     if (!exisingRole.is_allowed) {
         throw new Error('This role has been disabled ')
     }
+    console.log("5");
     
     let newUser = new UserModel(body)
     await repository.save(newUser)
+    console.log("6");
 
     newUser = newUser.toObject()
     delete newUser.password
+    console.log("7");
 
     const fullName = newUser.first_name + " " + newUser.last_name;
+    console.log("8");
 
-    await createUserMail({
-        name: fullName,
-        to: newUser.email,
-        new_password: password,
-        subject: 'Congratulations! Your account has been created',
-    })
+    // await createUserMail({
+    //     name: fullName,
+    //     to: newUser.email,
+    //     new_password: password,
+    //     subject: 'Congratulations! Your account has been created',
+    // })
+    console.log("9");
 
     return newUser
 }

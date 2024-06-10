@@ -3,13 +3,13 @@ const express = require('express')
 const router = express.Router()
 const validator = require('../../validators/validator')
 
-const { permissions } = require('./user-role.permission')
-const controller = require('./user-role.controller')
-const schema = require('./user-role.schema')
+const { permissions } = require('./paper.permission')
+const controller = require('./paper.controller')
+const schema = require('./paper.schema')
 
 const joiConfig = require('../../config/joiConfig')
 
-router.route(permissions.userRoleCreate.path).post(
+router.route(permissions.createPaper.path).post(
     // validator.validateHeader(),
     // validator.validateRouteAccessByRoleMultiple([
     //     {
@@ -21,8 +21,8 @@ router.route(permissions.userRoleCreate.path).post(
     //         action: 'add',
     //     },
     // ]),
-    validator.validateBody(schema.createRole),
-    controller.createUserRole
+    validator.validateBody(schema.createPaper),
+    controller.createPaper
 )
 
 router.route(permissions.userRoleUpdate.path).put(

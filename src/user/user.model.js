@@ -46,11 +46,11 @@ const schema = new mongoose.Schema(
             ref: "user_role",
             required: true,
         },
-        enroll: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "user_enroll",
-            required: true,
-        },
+        // enroll: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref: "user_enroll",
+        //     required: true,
+        // },
         status: {
             type: String,
             default: userStatus.notConfirmed,

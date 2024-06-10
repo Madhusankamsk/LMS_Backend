@@ -53,6 +53,13 @@ const schema = new mongoose.Schema(
             required: true,
             default: true,
         },
+        is_deleted: {
+            type: Boolean,
+            default: false,
+        },
+        delete_date: {
+            type: Date,
+        },
     },
     { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )

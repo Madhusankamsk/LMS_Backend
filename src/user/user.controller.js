@@ -11,8 +11,10 @@ const {
 module.exports.createUser = async (req, res) => {
     try {
       const data = await service.createUser(req.body);
+      //console.log(data);
       return successWithData(data, res);
     } catch (error) {
+      console.log(error.message);
       return customError(error.message, res);
     }
   };

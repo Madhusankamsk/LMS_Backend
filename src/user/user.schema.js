@@ -25,7 +25,6 @@ module.exports.createUser = joi.object().keys({
     school: joi.string(),
     grade: joi.string(),
     role: joi.string().required().max(24).min(24),
-    enroll: joi.string().required().max(24).min(24),
     nic: joi.string().required().max(10).min(10),
 })
 
