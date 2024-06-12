@@ -14,16 +14,8 @@ const { includeExcludeFields } = require('../../services/queryService')
 const config = require('../../config/config')
 
 module.exports.createPaper = async (body) => {
-    const exisingRole = await repository.findOne( PaperModel, {
-        role: body.role,
-    })
-
-    if (exisingRole) {
-        throw new Error(`Role is already defined`)
-    }
-
-    const user = new UserRoleModel(body)
-    const data = await repository.save(user)
+    const paper = new PaperModel(body)
+    const data = await repository.save(paper)
     return data
 }
 
