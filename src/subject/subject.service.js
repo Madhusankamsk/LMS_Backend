@@ -12,6 +12,7 @@ const { includeExcludeFields } = require('../../services/queryService');
 module.exports.getSubjectById = async (id) => {
     const subject = await repository.findOne(SubjectModel, {
         _id: new mongoose.Types.ObjectId(id),
+        is_deleted: false, 
     })
     return subject
 }
@@ -29,7 +30,6 @@ module.exports.getSubjectByCode = async (code, filterActive = true) => {
 }
 
 module.exports.getSubjects = async (body) => {
-    console.log("1");
     const {
         limit,
         order,
@@ -38,7 +38,6 @@ module.exports.getSubjects = async (body) => {
         exclude = [],
     } = body
     const column = body.column || -1
-    console.log("2");
 
     const sortingOrder =
         order === sortingConfig.sortingOrder.descending || !order ? -1 : 1
@@ -49,7 +48,7 @@ module.exports.getSubjects = async (body) => {
             $ne: true,
         },
     };
-    console.log("3");
+
     let projectQuery = []
     let recordsTotal
     let subjects
@@ -58,7 +57,7 @@ module.exports.getSubjects = async (body) => {
         [sortingColumn]: sortingOrder,
         updated_at: -1,
     }
-    console.log("4");
+
     const prePaginationQuery = [
         {
             $match: matchQuery,
@@ -80,7 +79,6 @@ module.exports.getSubjects = async (body) => {
             },
         ]
     }
-    console.log("5");
 
     const paginationQuery = [
         { $sort: sortQuery },
