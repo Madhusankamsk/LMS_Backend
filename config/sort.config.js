@@ -4,7 +4,7 @@ module.exports = {
       descending: "desc",
     },
     sortingColumn: {
-      user: {
+      update_at: {
         "-1": "updated_at",
       },
     },
