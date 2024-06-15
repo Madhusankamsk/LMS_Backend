@@ -17,9 +17,13 @@ module.exports.createPaper = async (req, res) => {
 
 module.exports.updatePaper = async (req, res) => {
   try {
+    console.log("a");
     const data = await paperService.updatePaper(req.body);
+    console.log("b");
     return successWithData(data, res);
   } catch (error) {
+    console.log("c");
+    console.log(error.message);
     return customError(error.message, res);
   }
 };

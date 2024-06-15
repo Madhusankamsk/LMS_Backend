@@ -50,6 +50,9 @@ const schema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        display_image_link: {
+            type: String,
+        },
         answer_link: {
             type: String,
         },

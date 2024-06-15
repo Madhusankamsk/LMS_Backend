@@ -29,25 +29,38 @@ const updateRouteSchema = joi.object({
 })
 
 module.exports.createPaper = joi.object({
-    role: joi.string().required(),
-    role_type: joi
-        .string()
-        .valid(...Object.values(Config.role_types))
-        .required(),
-    is_allowed: joi.boolean().required(),
-    routes: joi.array().when('role_type', {
-        is: 'admin',
-        then: joi.array().items(routeSchema).required().min(1),
-        otherwise: joi.array().items(routeSchema),
-    }),
+    title: joi.string().required().min(1),
+    subject_id: joi.string().required().max(24).min(24),
+    category_id: joi.string().required().max(24).min(24),
+    teacher_id: joi.string().required().max(24).min(24),
+    duration: joi.string().required().min(1),
+    publish_date: joi.date().required(),
+    is_free: joi.boolean().required(),
+    price: joi.string(),
+    rate_value: joi.number(),
+    paper_link: joi.string().required().min(1),
+    display_image_link: joi.string().required().min(1),
+    answer_link: joi.string().required().min(1),
+    video_link: joi.string().required().min(1),
+    description: joi.string().required().min(1),
 })
 
 module.exports.updatePaper = joi.object({
     _id: joi.string().max(24).min(24).required(),
-    role_type: joi.string().valid(...Object.values(Config.role_types)),
-    role: joi.string(),
-    routes: joi.array().items(updateRouteSchema),
-    is_allowed: joi.boolean(),
+    title: joi.string().min(1),
+    subject_id: joi.string().max(24).min(24),
+    category_id: joi.string().max(24).min(24),
+    teacher_id: joi.string().max(24).min(24),
+    duration: joi.string().min(1),
+    publish_date: joi.date(),
+    is_free: joi.boolean(),
+    price: joi.string(),
+    rate_value: joi.number(),
+    paper_link: joi.string().min(1),
+    display_image_link: joi.string().min(1),
+    answer_link: joi.string().min(1),
+    video_link: joi.string().min(1),
+    description: joi.string().min(1),
 })
 
 module.exports.deletePaper = joi.object({
