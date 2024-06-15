@@ -13,6 +13,13 @@ const { setLimitToPositiveValue } = require('../../services/commonService')
 const { includeExcludeFields } = require('../../services/queryService')
 const config = require('../../config/config')
 
+module.exports.getPaperById = async (id) => {
+    const city = await repository.findOne(PaperModel, {
+        _id: new mongoose.Types.ObjectId(id),
+    })
+    return city
+}
+
 module.exports.createPaper = async (body) => {
     const paper = new PaperModel(body)
     const data = await repository.save(paper)
@@ -20,135 +27,20 @@ module.exports.createPaper = async (body) => {
 }
 
 module.exports.updatePaper = async (body) => {
-    const { routes, role, is_allowed, _id } = body
-    let deleteRoutes = []
-    let updateRoutes = []
-    let insertRoutes = []
-
-    if (routes && routes.length > 0) {
-        deleteRoutes = routes.filter((r) => r.action === 'delete')
-        updateRoutes = routes.filter((r) => r.action === 'update')
-        insertRoutes = routes.filter((r) => r.action === 'insert')
-    }
-
-    // validate role
-    const existingRole = await repository.findOne(UserRoleModel, {
-        _id: mongoose.Types.ObjectId(_id),
-    })
-
-    if (!existingRole) {
-        throw new Error('role not found')
-    }
-
-    // valdate the routes on insert
-    const exisingRoute = await repository.findOne(UserRoleModel, {
-        role,
-        'routes.baseRoute': {
-            $in: insertRoutes.map((route) => route.baseRoute),
+    const existingPaper = await this.getPaperById(body._id);
+    if (!existingPaper) throw new Error('Invalid news id');
+    let paperUpdate = await repository.updateOne(
+        PaperModel,
+        {
+            _id: body._id,
         },
-    })
-
-    if (exisingRoute) {
-        throw new Error(
-            `${exisingRoute.routes
-                .map((route) => route.baseRoute)
-                .join(' ')} already defined, unable to proceed`
-        )
-    }
-
-    if (
-        existingRole.role !== role ||
-        existingRole.is_allowed.toString() !== is_allowed.toString()
-    ) {
-        await repository.updateOne(
-            UserRoleModel,
-            {
-                _id: mongoose.Types.ObjectId(_id),
-            },
-            {
-                role,
-                is_allowed,
-            }
-        )
-    }
-
-    if (updateRoutes.length > 0) {
-        const setObj = {}
-        const arrayFilter = []
-
-        if (role) {
-            setObj.role = role
+        body,
+        {
+            new: true,
         }
-        if (is_allowed === false || is_allowed === true) {
-            setObj.is_allowed = is_allowed
-        }
-        updateRoutes.forEach((route) => {
-            const { _id: routeId, ...rest } = route
-            const elemKey = `routes.$[elem${routeId}]`
-            setObj[elemKey] = rest
-            arrayFilter.push({
-                [`elem${routeId}._id`]: mongoose.Types.ObjectId(routeId),
-            })
-        })
-
-        const query = [
-            {
-                _id: mongoose.Types.ObjectId(_id),
-            },
-            {
-                $set: setObj,
-            },
-            {
-                arrayFilters: arrayFilter,
-                new: true,
-            },
-        ]
-
-        await repository.updateOne(UserRoleModel, ...query)
-    }
-
-    if (insertRoutes.length > 0) {
-        const query = [
-            {
-                _id: mongoose.Types.ObjectId(_id),
-            },
-            {
-                $push: {
-                    routes: { $each: insertRoutes },
-                },
-            },
-            {
-                new: true,
-            },
-        ]
-
-        await repository.updateOne(UserRoleModel, ...query)
-    }
-
-    if (deleteRoutes.length > 0) {
-        const deleteRouteIds = deleteRoutes.map((r) => r._id)
-        const query = [
-            {
-                _id: mongoose.Types.ObjectId(_id),
-            },
-            {
-                $pull: {
-                    routes: { _id: deleteRouteIds },
-                },
-            },
-            {
-                new: true,
-            },
-        ]
-
-        await repository.updateOne(UserRoleModel, ...query)
-    }
-
-    const returnResult = await repository.findOne(UserRoleModel, {
-        _id: mongoose.Types.ObjectId(_id),
-    })
-
-    return returnResult
+    );
+    paperUpdate = paperUpdate.toObject();
+    return paperUpdate;
 }
 
 module.exports.getPaper = async (body) => {
@@ -158,11 +50,11 @@ module.exports.getPaper = async (body) => {
 
     const sortingOrder =
         order === sortingConfig.sortingOrder.descending || !order ? -1 : 1
-    const sortingColumn = sortingConfig.sortingColumn.users[column]
+    const sortingColumn = sortingConfig.sortingColumn.papers[column]
 
     let matchQuery = {
         role: {
-            $ne: superAdmin,
+            $ne: is_deleted,
         },
     }
     let projectQuery = []

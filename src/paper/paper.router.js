@@ -10,7 +10,7 @@ const schema = require('./paper.schema')
 const joiConfig = require('../../config/joiConfig')
 
 router.route(permissions.createPaper.path).post(
-    // validator.validateHeader(),
+    //validator.validateHeader(),
     // validator.validateRouteAccessByRoleMultiple([
     //     {
     //         baseRoute: '/user_roles',
@@ -24,50 +24,51 @@ router.route(permissions.createPaper.path).post(
     validator.validateBody(schema.createPaper),
     controller.createPaper
 )
-
-router.route(permissions.userRoleUpdate.path).put(
-    validator.validateHeader(),
-    validator.validateRouteAccessByRoleMultiple([
-        {
-            baseRoute: '/user_roles',
-            action: 'edit',
-        },
-        {
-            baseRoute: '/admin_roles',
-            action: 'edit',
-        },
-    ]),
-    validator.validateBody(schema.updateRole),
-    controller.userRoleUpdate
+//jvgokdsgjkaojg
+router.route(permissions.updatePaper.path).put(
+    //validator.validateHeader(),
+    // validator.validateRouteAccessByRoleMultiple([
+    //     {
+    //         baseRoute: '/user_roles',
+    //         action: 'edit',
+    //     },
+    //     {
+    //         baseRoute: '/admin_roles',
+    //         action: 'edit',
+    //     },
+    // ]),
+    validator.validateBody(schema.updatePaper),
+    controller.updatePaper
 )
 
-router.route(permissions.toggleBlock.path).post(
-    validator.validateHeader(),
-    validator.validateRouteAccessByRoleMultiple([
-        {
-            baseRoute: '/user_roles',
-            action: 'block',
-        },
-        {
-            baseRoute: '/admin_roles',
-            action: 'block',
-        },
-    ]),
-    validator.validateBody(schema.toggleBlock),
-    controller.toggleBlock
-)
+//For delete
+// router.route(permissions.toggleBlock.path).post(
+//     validator.validateHeader(),
+//     // validator.validateRouteAccessByRoleMultiple([
+//     //     {
+//     //         baseRoute: '/user_roles',
+//     //         action: 'block',
+//     //     },
+//     //     {
+//     //         baseRoute: '/admin_roles',
+//     //         action: 'block',
+//     //     },
+//     // ]),
+//     validator.validateBody(schema.toggleBlock),
+//     controller.toggleBlock
+// )
 
-router.route(permissions.userRoleGetAll.path).get(
-    validator.validateHeader(),
-    validator.validateQueryParameters(
-        joiConfig.userRolesPaginationSchema(joiConfig.maxRecords)
-    ),
-    controller.getUserRoles
-)
+// router.route(permissions.getPaperAll.path).get(
+//     validator.validateHeader(),
+//     validator.validateQueryParameters(
+//         joiConfig.userRolesPaginationSchema(joiConfig.maxRecords)
+//     ),
+//     controller.getPaperAll
+// )
 
-router.route(permissions.userRoleGetById.path).get(
-    validator.validateHeader(),
-    controller.getUserRolesById
-)
+// router.route(permissions.getPaperById.path).get(
+//     validator.validateHeader(),
+//     controller.getPaperById
+// )
 
 module.exports = router
