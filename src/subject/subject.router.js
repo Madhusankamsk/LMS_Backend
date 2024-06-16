@@ -2,12 +2,11 @@ const express = require('express')
 
 const router = express.Router()
 const validator = require('../../validators/validator')
+const joiConfig = require('../../config/joiConfig')
 
 const { permissions } = require('./subject.permission')
 const controller = require('./subject.controller')
 const schema = require('./subject.schema')
-
-const joiConfig = require('../../config/joiConfig')
 
 router.route(permissions.getSubjectById.path).get(
     //validator.validateHeader(),
@@ -37,7 +36,11 @@ router.route(permissions.getSubjects.path).get(
     //         action: 'add',
     //     },
     // ]),
-    validator.validateBody(schema.getSubjects),
+
+    //validator.validateBody(schema.getSubjects),
+    validator.validateQueryParameters(
+        schema.getSubjects(joiConfig.maxRecords)
+    ),
     controller.getSubjects
 )
 
@@ -56,7 +59,7 @@ router.route(permissions.createSubject.path).post(
     validator.validateBody(schema.createSubject),
     controller.createSubject
 )
-//jvgokdsgjkaojg
+
 router.route(permissions.updateSubject.path).put(
     //validator.validateHeader(),
     // validator.validateRouteAccessByRoleMultiple([

@@ -15,6 +15,15 @@ module.exports.getSubjectById = async (req, res) => {
     }
 };
 
+module.exports.getSubjects = async (req, res) => {
+    try {
+        const data = await service.getSubjects(req.query)
+        return successWithData(data, res)
+    } catch (error) {
+        return customError(error.message, res)
+    }
+}
+
 module.exports.createSubject = async (req, res) => {
     try {
         const data = await service.createSubject(req.body)
@@ -36,15 +45,6 @@ module.exports.updateSubject = async (req, res) => {
 module.exports.deleteSubject = async (req, res) => {
     try {
         const data = await service.deleteSubject(req.params.id)
-        return successWithData(data, res)
-    } catch (error) {
-        return customError(error.message, res)
-    }
-}
-
-module.exports.getSubjects = async (req, res) => {
-    try {
-        const data = await service.getSubjects(req.query)
         return successWithData(data, res)
     } catch (error) {
         return customError(error.message, res)
