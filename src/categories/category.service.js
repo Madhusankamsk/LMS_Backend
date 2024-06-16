@@ -10,14 +10,6 @@ const { setLimitToPositiveValue } = require('../../services/commonService');
 const { includeExcludeFields } = require('../../services/queryService');
 const subjectService = require('../subject/subject.service');
 
-module.exports.getCategoryById = async (id) => {
-    const category = await repository.findOne(CategoryModel, {
-        _id: new mongoose.Types.ObjectId(id),
-        is_deleted: false,
-    })
-    return category
-}
-
 module.exports.getCategoryByNameWithSameSubject = async (name, subject_id, filterActive = true) => {
     const filter = {
         name,
@@ -29,6 +21,86 @@ module.exports.getCategoryByNameWithSameSubject = async (name, subject_id, filte
     if (!filterActive) delete filter.is_active
 
     return repository.findOne(CategoryModel, filter)
+}
+
+module.exports.toggleCategoriesBySubject = async (subject_id, SubjectInactiveDate) => {
+    //Assume subject_id is existing one,
+    const existingSubject = await subjectService.getSubjectById(subject_id);
+    if (!existingSubject) throw new Error('Invalid subject _id');
+
+    if(existingSubject.is_active){
+        console.log(typeof existingSubject.inactive_date);
+        console.log(existingSubject.inactive_date);
+        const date = new Date(existingSubject.inactive_date);
+        console.log(typeof date);
+        console.log(date);
+        const categoriesToToggle = await repository.updateMany(
+            CategoryModel,
+            {
+                subject_id: new mongoose.Types.ObjectId(subject_id),
+                inactive_date: SubjectInactiveDate,
+            },
+            {
+                $set: {
+                    is_active: true,
+                    inactive_date: null,
+                },
+            },
+            {
+                new: true, 
+            }
+        );
+        return categoriesToToggle
+    } else {
+        const categoriesToToggle = await repository.updateMany(
+            CategoryModel,
+            {
+                subject_id: new mongoose.Types.ObjectId(subject_id),
+                inactive_date: null, 
+            },
+            {
+                $set: {
+                    is_active: false,
+                    inactive_date: SubjectInactiveDate,
+                },
+            },
+            {
+                new: true, 
+            }
+        );
+        return categoriesToToggle
+    }
+}
+
+module.exports.deleteCategoriesBySubject = async (subject_id) => {
+    const existingSubject = await subjectService.getSubjectById(subject_id);
+    if (!existingSubject) throw new Error('Invalid subject _id');
+
+    const categoriesToDelete = await repository.updateMany(
+        CategoryModel,
+        {
+            subject_id: new mongoose.Types.ObjectId(subject_id),
+        },
+        {
+            $set: {
+                is_deleted: true,
+                delete_date: new Date(),
+            },
+        },
+        {
+            new: true, 
+        }
+    );
+
+    return categoriesToDelete;
+}
+
+module.exports.getCategoryById = async (id) => {
+    const category = await repository.findOne(CategoryModel, {
+        _id: new mongoose.Types.ObjectId(id),
+        is_deleted: false,
+    })
+    return category
 }
 
 module.exports.getCategories = async (body) => {
@@ -89,7 +161,6 @@ module.exports.getCategories = async (body) => {
                         $project: {
                             name: 1,
                             code: 1,
-                            _id: 1,
                         },
                     },
                 ],
@@ -220,11 +291,52 @@ module.exports.updateCategory = async (body) => {
     return categoryToUpdate;
 }
 
+module.exports.toggleCategory = async (id) => {
+    const existingCategory = await this.getCategoryById(id.toString());
+    if (!existingCategory) throw new Error('Invalid category _id');
+
+    if(existingCategory.is_active){
+        const categoryToToggle = await repository.updateOne(
+            CategoryModel,
+            {
+                _id: new mongoose.Types.ObjectId(id),
+            },
+            {
+                $set: {
+                    is_active: false,
+                    inactive_date: new Date(), 
+                },
+            },
+            {
+                new: true,
+            }
+        )
+        return categoryToToggle
+    } else {
+        const categoryToToggle = await repository.updateOne(
+            CategoryModel,
+            {
+                _id: new mongoose.Types.ObjectId(id),
+            },
+            {
+                $set: {
+                    is_active: true,
+                    inactive_date: null, 
+                },
+            },
+            {
+                new: true,
+            }
+        )
+        return categoryToToggle
+    }
+}
+
 module.exports.deleteCategory = async (id) => {
     const existingCategory = await this.getCategoryById(id.toString());
     if (!existingCategory) throw new Error('Invalid category _id');
 
-    const subjectToDelete = await repository.updateOne(
+    const categoryToDelete = await repository.updateOne(
         CategoryModel,
         {
             _id: new mongoose.Types.ObjectId(id),
@@ -240,5 +352,6 @@ module.exports.deleteCategory = async (id) => {
         }
     )
 
-    return subjectToDelete
+    return categoryToDelete
 }
+

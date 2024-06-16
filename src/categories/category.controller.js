@@ -15,6 +15,15 @@ module.exports.getCategoryById = async (req, res) => {
     }
 };
 
+module.exports.getCategories = async (req, res) => {
+    try {
+        const data = await service.getCategories(req.query)
+        return successWithData(data, res)
+    } catch (error) {
+        return customError(error.message, res)
+    }
+}
+
 module.exports.createCategory = async (req, res) => {
     try {
         const data = await service.createCategory(req.body)
@@ -33,18 +42,18 @@ module.exports.updateCategory = async (req, res) => {
     }
 }
 
-module.exports.deleteCategory = async (req, res) => {
+module.exports.toggleCategory = async (req, res) => {
     try {
-        const data = await service.deleteCategory(req.params.id)
+        const data = await service.toggleCategory(req.params.id)
         return successWithData(data, res)
     } catch (error) {
         return customError(error.message, res)
     }
 }
 
-module.exports.getCategories = async (req, res) => {
+module.exports.deleteCategory = async (req, res) => {
     try {
-        const data = await service.getCategories(req.query)
+        const data = await service.deleteCategory(req.params.id)
         return successWithData(data, res)
     } catch (error) {
         return customError(error.message, res)

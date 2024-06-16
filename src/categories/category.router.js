@@ -14,7 +14,6 @@ router.route(permissions.getCategoryById.path).get(
 )
 
 router.route(permissions.getCategories.path).get(
-    //validator.validateBody(schema.getCategories),
     validator.validateQueryParameters(
         schema.getCategories(joiConfig.maxRecords)
     ),
@@ -29,6 +28,11 @@ router.route(permissions.createCategory.path).post(
 router.route(permissions.updateCategory.path).put(
     validator.validateBody(schema.updateCategory),
     controller.updateCategory
+)
+
+router.route(permissions.toggleCategory.path).put(
+    validator.validateRouteParameters(schema.toggleCategory),
+    controller.toggleCategory
 )
 
 router.route(permissions.deleteCategory.path).delete(

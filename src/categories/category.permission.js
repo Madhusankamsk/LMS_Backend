@@ -18,6 +18,10 @@ module.exports.permissions = {
         path: "/update",
         granted: [superAdmin],
     },
+    toggleCategory: {
+        path: "/toggle/:id",
+        granted: [superAdmin],
+    },
     deleteCategory: {
         path: "/delete/:id",
         granted: [superAdmin],

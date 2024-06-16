@@ -16,6 +16,10 @@ const schema = new mongoose.Schema(
             required : true,
             default: true
         },
+        inactive_date: {
+            type: Date,
+            default: null,
+        },
         is_deleted: {
             type: Boolean,
             default: false,

@@ -18,6 +18,10 @@ module.exports.permissions = {
         path: "/update",
         granted: [superAdmin],
     },
+    toggleSubject: {
+        path: "/toggle/:id",
+        granted: [superAdmin],
+    },
     deleteSubject: {
         path: "/delete/:id",
         granted: [superAdmin],

@@ -8,6 +8,7 @@ const sortingConfig = require('../../config/sort.config');
 const SubjectModel = require('./subject.model');
 const { setLimitToPositiveValue } = require('../../services/commonService');
 const { includeExcludeFields } = require('../../services/queryService');
+const categoryService = require('../categories/category.service');
 
 module.exports.getSubjectById = async (id) => {
     const subject = await repository.findOne(SubjectModel, {
@@ -166,9 +167,60 @@ module.exports.updateSubject = async (body) => {
     return subjectToUpdate;
 }
 
+module.exports.toggleSubject = async (id) => {
+    const existingSubject = await this.getSubjectById(id.toString());
+    if (!existingSubject) throw new Error('Invalid subject _id');
+
+    if(existingSubject.is_active){
+        const subjectToToggle = await repository.updateOne(
+            SubjectModel,
+            {
+                _id: new mongoose.Types.ObjectId(id),
+            },
+            {
+                $set: {
+                    is_active: false,
+                    inactive_date: new Date(), 
+                },
+            },
+            {
+                new: true,
+            }
+        )
+        const categoriesToToggle = await categoryService.toggleCategoriesBySubject(existingSubject._id , subjectToToggle.inactive_date)
+        return {
+            toggledSubject: subjectToToggle,
+            toggledCategories: categoriesToToggle
+        };
+    } else {
+        const subjectToToggle = await repository.updateOne(
+            SubjectModel,
+            {
+                _id: new mongoose.Types.ObjectId(id),
+            },
+            {
+                $set: {
+                    is_active: true,
+                    inactive_date: null, 
+                },
+            },
+            {
+                new: true,
+            }
+        )
+        const categoriesToToggle = await categoryService.toggleCategoriesBySubject(existingSubject._id , existingSubject.inactive_date)
+        return {
+            toggledSubject: subjectToToggle,
+            toggledCategories: categoriesToToggle
+        };
+    }
+}
+
 module.exports.deleteSubject = async (id) => {
     const existingSubject = await this.getSubjectById(id.toString());
     if (!existingSubject) throw new Error('Invalid subject _id');
+
+    const categoriesToDelete = await categoryService.deleteCategoriesBySubject(existingSubject._id);
 
     const subjectToDelete = await repository.updateOne(
         SubjectModel,
@@ -186,7 +238,10 @@ module.exports.deleteSubject = async (id) => {
         }
     )
 
-    return subjectToDelete
+    return {
+        deletedSubject: subjectToDelete,
+        deletedCategories: categoriesToDelete
+    };
 }
 
 
