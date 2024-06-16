@@ -15,5 +15,6 @@ router.use("/user", require("../src/user/user.router"));
 router.use("/user_role", require("../src/user-role/user-role.router"));
 router.use("/subject", require("../src/subject/subject.router"));
 router.use("/paper", require("../src/paper/paper.router"));
+router.use("/categories", require("../src/categories/category.router"));
 
 module.exports = router;

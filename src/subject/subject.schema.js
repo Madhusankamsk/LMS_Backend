@@ -5,9 +5,11 @@ module.exports.getSubjectById = joi.object({
     id: joi.string().required().max(24).min(24),
 })
 
-module.exports.getSubjects = joi.object({
-    ...joiConfig.pagination,
-})
+module.exports.getSubjects = (maxLimit) => {
+    return joi.object().keys({
+        ...joiConfig.pagination(maxLimit),
+    });
+};
 
 module.exports.createSubject = joi.object({
     name: joi.string().required().min(1).max(30),
