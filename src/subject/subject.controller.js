@@ -42,6 +42,15 @@ module.exports.updateSubject = async (req, res) => {
     }
 }
 
+module.exports.toggleSubject = async (req, res) => {
+    try {
+        const data = await service.toggleSubject(req.params.id)
+        return successWithData(data, res)
+    } catch (error) {
+        return customError(error.message, res)
+    }
+}
+
 module.exports.deleteSubject = async (req, res) => {
     try {
         const data = await service.deleteSubject(req.params.id)

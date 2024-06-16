@@ -22,6 +22,10 @@ module.exports.updateSubject = joi.object({
     code:joi.string(),
 })
 
+module.exports.toggleSubject = joi.object({
+    id: joi.string().required().max(24).min(24),
+})
+
 module.exports.deleteSubject = joi.object({
     id: joi.string().required().max(24).min(24),
 })

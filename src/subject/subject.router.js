@@ -76,6 +76,22 @@ router.route(permissions.updateSubject.path).put(
     controller.updateSubject
 )
 
+router.route(permissions.toggleSubject.path).put(
+    //validator.validateHeader(),
+    // validator.validateRouteAccessByRoleMultiple([
+    //     {
+    //         baseRoute: '/user_roles',
+    //         action: 'edit',
+    //     },
+    //     {
+    //         baseRoute: '/admin_roles',
+    //         action: 'edit',
+    //     },
+    // ]),
+    validator.validateRouteParameters(schema.toggleSubject),
+    controller.toggleSubject
+)
+
 router.route(permissions.deleteSubject.path).delete(
     //validator.validateHeader(),
     // validator.validateRouteAccessByRoleMultiple([
