@@ -1,6 +1,13 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable camelcase */
+/* eslint-disable no-underscore-dangle */
+const mongoose = require('mongoose')
+const { pathOr } = require('ramda')
+
+const repository = require('../../services/repositoryService')
 const UserModel = require('./user.model')
 const { getUserRolesById } = require('../user-role/user-role.service')
-const repository = require('../../services/repositoryService')
+
 
 // const {
 //     createUserMail,
@@ -8,7 +15,8 @@ const repository = require('../../services/repositoryService')
 
 module.exports.getUserById = async (body) => {
     const user = await repository.findOne(UserModel, {
-        _id: mongoose.Types.ObjectId(body.id),
+        _id: new mongoose.Types.ObjectId(body.id),
+        is_deleted: false,
     })
     return user
 }

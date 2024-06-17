@@ -2,12 +2,12 @@
 const { superAdmin } = require("../../config/permissionConfig").userRoles;
 
 module.exports.permissions = {
-    getSubjects: {
-        path: "/",
-        granted: [superAdmin],
-    },
     getSubjectById: {
         path: "/:id",
+        granted: [superAdmin],
+    },
+    getSubjects: {
+        path: "/",
         granted: [superAdmin],
     },
     createSubject: {

@@ -9,6 +9,7 @@ const SubjectModel = require('./subject.model');
 const { setLimitToPositiveValue } = require('../../services/commonService');
 const { includeExcludeFields } = require('../../services/queryService');
 const categoryService = require('../categories/category.service');
+const paperService = require('../paper/paper.service');
 
 module.exports.getSubjectById = async (id) => {
     const subject = await repository.findOne(SubjectModel, {
@@ -188,9 +189,11 @@ module.exports.toggleSubject = async (id) => {
             }
         )
         const categoriesToToggle = await categoryService.toggleCategoriesBySubject(existingSubject._id , subjectToToggle.inactive_date)
+        const papersToToggle = await paperService.togglePapersBySubject(existingSubject._id , subjectToToggle.inactive_date)
         return {
             toggledSubject: subjectToToggle,
-            toggledCategories: categoriesToToggle
+            toggledCategories: categoriesToToggle,
+            toggledPapers: papersToToggle
         };
     } else {
         const subjectToToggle = await repository.updateOne(
@@ -209,9 +212,11 @@ module.exports.toggleSubject = async (id) => {
             }
         )
         const categoriesToToggle = await categoryService.toggleCategoriesBySubject(existingSubject._id , existingSubject.inactive_date)
+        const papersToToggle = await paperService.togglePapersBySubject(existingSubject._id , subjectToToggle.inactive_date)
         return {
             toggledSubject: subjectToToggle,
-            toggledCategories: categoriesToToggle
+            toggledCategories: categoriesToToggle,
+            toggledPapers: papersToToggle
         };
     }
 }
@@ -221,6 +226,7 @@ module.exports.deleteSubject = async (id) => {
     if (!existingSubject) throw new Error('Invalid subject _id');
 
     const categoriesToDelete = await categoryService.deleteCategoriesBySubject(existingSubject._id);
+    const papersToDelete = await paperService.deletePapersBySubject(existingSubject._id);
 
     const subjectToDelete = await repository.updateOne(
         SubjectModel,
@@ -240,7 +246,8 @@ module.exports.deleteSubject = async (id) => {
 
     return {
         deletedSubject: subjectToDelete,
-        deletedCategories: categoriesToDelete
+        deletedCategories: categoriesToDelete,
+        deletedPapers: papersToDelete
     };
 }
 

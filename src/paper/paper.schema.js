@@ -1,5 +1,16 @@
 const joi = require('joi')
-const Config = require('../../config/config')
+const joiConfig = require('../../config/joiConfig')
+
+module.exports.getPaperById = joi.object({
+    id: joi.string().required().max(24).min(24),
+});
+
+module.exports.getPapers = (maxLimit) => {
+    return joi.object().keys({
+        subject_id: joi.string().alphanum().min(24).max(24),
+        ...joiConfig.pagination(maxLimit),
+    });
+};
 
 module.exports.createPaper = joi.object({
     title: joi.string().required().min(1),
@@ -36,9 +47,11 @@ module.exports.updatePaper = joi.object({
     description: joi.string().min(1),
 })
 
-module.exports.deletePaper = joi.object({
+module.exports.togglePaper = joi.object({
+    id: joi.string().required().max(24).min(24),
 })
 
-module.exports.getPapers = joi.object({
+module.exports.deletePaper = joi.object({
+    id: joi.string().required().max(24).min(24),
 })
 

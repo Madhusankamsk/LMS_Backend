@@ -2,12 +2,12 @@
 const { superAdmin } = require("../../config/permissionConfig").userRoles;
 
 module.exports.permissions = {
-    getCategories: {
-        path: "/",
-        granted: [superAdmin],
-    },
     getCategoryById: {
         path: "/:id",
+        granted: [superAdmin],
+    },
+    getCategories: {
+        path: "/",
         granted: [superAdmin],
     },
     createCategory: {
