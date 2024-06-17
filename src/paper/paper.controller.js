@@ -6,43 +6,58 @@ const {
   successWithData,
 } = require("../../services/responseService");
 
-module.exports.createPaper = async (req, res) => {
+module.exports.getPaperById = async (req, res) => {
   try {
-    const data = await paperService.createPaper(req.body);
-    return successWithData(data, res);
+      const data = await service.getPaperById(req.params);
+      return successWithData(data, res);
   } catch (error) {
-    return customError(error.message, res);
-  }
-};
-
-module.exports.updatePaper = async (req, res) => {
-  try {
-    console.log("a");
-    const data = await paperService.updatePaper(req.body);
-    console.log("b");
-    return successWithData(data, res);
-  } catch (error) {
-    console.log("c");
-    console.log(error.message);
-    return customError(error.message, res);
+      return customError(error.message, res);
   }
 };
 
 module.exports.getPapers = async (req, res) => {
   try {
-    const data = await paperService.getPaper(req.query);
-    return successWithData(data, res);
+      const data = await service.getPapers(req.query)
+      return successWithData(data, res)
   } catch (error) {
-    return customError(error.message, res);
+      return customError(error.message, res)
   }
-};
+}
 
-module.exports.deletePapers = async (req, res) => {
+module.exports.createPaper = async (req, res) => {
   try {
-    const data = await paperService.getPapers(req.query);
-    return successWithData(data, res);
+      const data = await service.createPaper(req.body)
+      return successWithData(data, res)
   } catch (error) {
-    return customError(error.message, res);
+      return customError(error.message, res)
   }
-};
+}
+
+module.exports.updatePaper = async (req, res) => {
+  try {
+      const data = await service.updatePaper(req.body)
+      return successWithData(data, res)
+  } catch (error) {
+      return customError(error.message, res)
+  }
+}
+
+module.exports.togglePaper = async (req, res) => {
+  try {
+      const data = await service.togglePaper(req.params.id)
+      return successWithData(data, res)
+  } catch (error) {
+      return customError(error.message, res)
+  }
+}
+
+module.exports.deletePaper = async (req, res) => {
+  try {
+      const data = await service.deletePaper(req.params.id)
+      return successWithData(data, res)
+  } catch (error) {
+      return customError(error.message, res)
+  }
+}
+
 

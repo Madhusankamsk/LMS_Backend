@@ -23,6 +23,7 @@ const schema = new mongoose.Schema(
         },
         is_deleted: {
             type: Boolean,
+            required : true,
             default: false,
         },
         delete_date: {

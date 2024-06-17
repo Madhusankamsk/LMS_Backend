@@ -9,6 +9,7 @@ const CategoryModel = require('./category.model');
 const { setLimitToPositiveValue } = require('../../services/commonService');
 const { includeExcludeFields } = require('../../services/queryService');
 const subjectService = require('../subject/subject.service');
+const paperService = require('../paper/paper.service');
 
 module.exports.getCategoryByNameWithSameSubject = async (name, subject_id, filterActive = true) => {
     const filter = {
@@ -214,6 +215,7 @@ module.exports.getCategories = async (body) => {
                     $or: [
                         { name: { $regex: search, $options: 'i' } },
                         { 'subject.name': { $regex: search, $options: "i" } },
+                        { 'subject.code': { $regex: search, $options: "i" } },
                     ],
                 },
             },
@@ -311,7 +313,11 @@ module.exports.toggleCategory = async (id) => {
                 new: true,
             }
         )
-        return categoryToToggle
+        const papersToToggle = await paperService.togglePapersByCategory(existingCategory._id , existingCategory.inactive_date)
+        return {
+            toggledCategories: categoryToToggle,
+            toggledPapers: papersToToggle
+        };
     } else {
         const categoryToToggle = await repository.updateOne(
             CategoryModel,
@@ -328,13 +334,19 @@ module.exports.toggleCategory = async (id) => {
                 new: true,
             }
         )
-        return categoryToToggle
+        const papersToToggle = await paperService.togglePapersByCategory(existingCategory._id , existingCategory.inactive_date)
+        return {
+            toggledCategories: categoryToToggle,
+            toggledPapers: papersToToggle
+        };
     }
 }
 
 module.exports.deleteCategory = async (id) => {
     const existingCategory = await this.getCategoryById(id.toString());
     if (!existingCategory) throw new Error('Invalid category _id');
+
+    const papersToDelete = await paperService.deletePapersByCategory(existingCategory._id);
 
     const categoryToDelete = await repository.updateOne(
         CategoryModel,
@@ -352,6 +364,9 @@ module.exports.deleteCategory = async (id) => {
         }
     )
 
-    return categoryToDelete
+    return {
+        deletedCategories: categoryToDelete,
+        deletedPapers: papersToDelete
+    };
 }
 

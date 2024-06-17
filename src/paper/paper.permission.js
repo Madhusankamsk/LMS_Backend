@@ -1,20 +1,29 @@
-const { superAdmin } = require('../../config/permissionConfig').userRoles
+// import permission list
+const { superAdmin } = require("../../config/permissionConfig").userRoles;
 
 module.exports.permissions = {
+    getPaperById: {
+        path: "/:id",
+        granted: [superAdmin],
+    },
     getPapers: {
-        path: '/',
+        path: "/",
         granted: [superAdmin],
     },
     createPaper: {
-        path: '/create',
+        path: "/create",
         granted: [superAdmin],
     },
     updatePaper: {
-        path: '/update',
+        path: "/update",
+        granted: [superAdmin],
+    },
+    togglePaper: {
+        path: "/toggle/:id",
         granted: [superAdmin],
     },
     deletePaper: {
-        path: '/delete/:id',
+        path: "/delete/:id",
         granted: [superAdmin],
     },
-}
+};

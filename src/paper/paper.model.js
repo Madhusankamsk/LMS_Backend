@@ -9,17 +9,17 @@ const schema = new mongoose.Schema(
         },
         subject_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "user_role",
+            ref: "subjects",
             required: true,
         },
         category_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "user_role",
+            ref: "categories",
             required: true,
         },
         teacher_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "user_role",
+            ref: "users",
             required: true,
         },
         duration: {
@@ -59,8 +59,17 @@ const schema = new mongoose.Schema(
         video_link: {
             type: String,
         },
+        is_active: {
+            type: Boolean,
+            default: true,
+        },
+        inactive_date: {
+            type: Date,
+            default: null,
+        },
         is_deleted: {
             type: Boolean,
+            required : true,
             default: false,
         },
         delete_date: {
@@ -70,7 +79,7 @@ const schema = new mongoose.Schema(
     { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )
 
-schema.index({ role: 1 }) // Indexing
+schema.index({ title: 1 }) // Indexing
 
-const model = mongoose.model('paper', schema)
+const model = mongoose.model('papers', schema)
 module.exports = model

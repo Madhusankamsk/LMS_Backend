@@ -43,14 +43,9 @@ const schema = new mongoose.Schema(
         },
         role: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "user_role",
+            ref: "user_roles",
             required: true,
         },
-        // enroll: {
-        //     type: mongoose.Schema.Types.ObjectId,
-        //     ref: "user_enroll",
-        //     required: true,
-        // },
         status: {
             type: String,
             default: userStatus.notConfirmed,
@@ -58,10 +53,12 @@ const schema = new mongoose.Schema(
         },
         is_active: {
             type: Boolean,
+            required : true,
             default: true,
         },
         is_deleted: {
             type: Boolean,
+            required : true,
             default: false,
         },
         delete_date: {
@@ -90,7 +87,7 @@ schema.methods.setPassword = function (password) {
 schema.index({ email: 1, school: 1 }); // Indexing
 
 // create modal
-const model = mongoose.model("user", schema);
+const model = mongoose.model("users", schema);
 module.exports = model;
 
 

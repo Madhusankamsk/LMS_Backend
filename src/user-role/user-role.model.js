@@ -66,5 +66,5 @@ const schema = new mongoose.Schema(
 
 schema.index({ role: 1 }) // Indexing
 
-const model = mongoose.model('user_role', schema)
+const model = mongoose.model('user_roles', schema)
 module.exports = model
