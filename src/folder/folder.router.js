@@ -3,8 +3,8 @@ const express = require('express')
 const router = express.Router()
 const validator = require('../../validators/validator')
 
-const { permissions } = require('./unit.permission')
-const controller = require('./unit.controller')
+const { permissions } = require('./folder.permission')
+const controller = require('./folder.controller')
 const schema = require('./folder.schema')
 
 const joiConfig = require('../../config/joiConfig')

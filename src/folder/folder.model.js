@@ -17,9 +17,15 @@ const schema = new mongoose.Schema(
             ref: "categories",
             required: true,
         },
+        is_grand_mother: {
+            type: Boolean,
+            default: true,
+            required: true,
+        },
         is_active: {
             type: Boolean,
             default: true,
+            required: true,
         },
         inactive_date: {
             type: Date,

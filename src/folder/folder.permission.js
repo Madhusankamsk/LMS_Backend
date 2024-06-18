@@ -2,27 +2,27 @@
 const { superAdmin } = require("../../config/permissionConfig").userRoles;
 
 module.exports.permissions = {
-    getUnitById: {
+    getFolderById: {
         path: "/:id",
         granted: [superAdmin],
     },
-    getUnits: {
+    getFolders: {
         path: "/",
         granted: [superAdmin],
     },
-    createUnit: {
+    createFolder: {
         path: "/create",
         granted: [superAdmin],
     },
-    updateUnit: {
+    updateFolder: {
         path: "/update",
         granted: [superAdmin],
     },
-    toggleUnit: {
+    toggleFolder: {
         path: "/toggle/:id",
         granted: [superAdmin],
     },
-    deleteUnit: {
+    deleteFolder: {
         path: "/delete/:id",
         granted: [superAdmin],
     },

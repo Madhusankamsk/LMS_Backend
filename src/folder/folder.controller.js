@@ -1,59 +1,59 @@
-const paperService = require("./unit.service");
-
 const {
   // successWithPaginationData,
   customError,
   successWithData,
 } = require("../../services/responseService");
 
-module.exports.getPaperById = async (req, res) => {
+const service = require("./folder.service");
+
+module.exports.getFolderById = async (req, res) => {
   try {
-      const data = await service.getPaperById(req.params);
+      const data = await service.getFolderById(req.params);
       return successWithData(data, res);
   } catch (error) {
       return customError(error.message, res);
   }
 };
 
-module.exports.getPapers = async (req, res) => {
+module.exports.getFolders = async (req, res) => {
   try {
-      const data = await service.getPapers(req.query)
+      const data = await service.getFolders(req.query)
       return successWithData(data, res)
   } catch (error) {
       return customError(error.message, res)
   }
 }
 
-module.exports.createPaper = async (req, res) => {
+module.exports.createFolder = async (req, res) => {
   try {
-      const data = await service.createPaper(req.body)
+      const data = await service.createFolder(req.body)
       return successWithData(data, res)
   } catch (error) {
       return customError(error.message, res)
   }
 }
 
-module.exports.updatePaper = async (req, res) => {
+module.exports.updateFolder = async (req, res) => {
   try {
-      const data = await service.updatePaper(req.body)
+      const data = await service.updateFolder(req.body)
       return successWithData(data, res)
   } catch (error) {
       return customError(error.message, res)
   }
 }
 
-module.exports.togglePaper = async (req, res) => {
+module.exports.toggleFolder = async (req, res) => {
   try {
-      const data = await service.togglePaper(req.params.id)
+      const data = await service.toggleFolder(req.params.id)
       return successWithData(data, res)
   } catch (error) {
       return customError(error.message, res)
   }
 }
 
-module.exports.deletePaper = async (req, res) => {
+module.exports.deleteFolder = async (req, res) => {
   try {
-      const data = await service.deletePaper(req.params.id)
+      const data = await service.deleteFolder(req.params.id)
       return successWithData(data, res)
   } catch (error) {
       return customError(error.message, res)
