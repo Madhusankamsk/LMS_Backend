@@ -13,9 +13,10 @@ const { getUserRolesById } = require('../user-role/user-role.service')
 //     createUserMail,
 // } = require('../../mails/mails.service')
 
-module.exports.getUserById = async (body) => {
+module.exports.getUserById = async (id) => {
+    console.log(id);
     const user = await repository.findOne(UserModel, {
-        _id: new mongoose.Types.ObjectId(body.id),
+        _id: new mongoose.Types.ObjectId(id),
         is_deleted: false,
     })
     return user

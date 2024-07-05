@@ -1,4 +1,4 @@
-const paperService = require("./paper.service");
+const service = require("./paper.service");
 
 const {
   // successWithPaginationData,

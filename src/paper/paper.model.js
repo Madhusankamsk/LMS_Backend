@@ -40,7 +40,6 @@ const schema = new mongoose.Schema(
         },
         rate_value: {
             type: Number,
-            required: true,
         },
         paper_link: {
             type: String,

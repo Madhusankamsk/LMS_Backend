@@ -16,12 +16,12 @@ server.use("/api", require("./routes"));
 // Database Connection initiation
 const { isProduction } = config;
 if (isProduction) {
-    mongoose.connect(`mongodb+srv:${config.database}`, {
+    mongoose.connect(`${config.database}`, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
     });
   } else {
-    mongoose.connect(`mongodb+srv:${config.testDatabase}`, {
+    mongoose.connect(`${config.testDatabase}`, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
     });

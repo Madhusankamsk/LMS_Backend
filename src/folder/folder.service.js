@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const { pathOr } = require('ramda')
 
 const repository = require('../../services/repositoryService')
-const PaperModel = require('./folder.model')
+const FolderModel = require('./folder.model')
 const sortingConfig = require('../../config/sort.config')
 const { superAdmin } = require('../../config/permissionConfig').userRoles
 
@@ -148,11 +148,11 @@ const userService = require('../user/user.service');
 // }
 
 module.exports.getFolderById = async (id) => {
-    const paper = await repository.findOne(PaperModel, {
+    const folder = await repository.findOne(FolderModel, {
         _id: new mongoose.Types.ObjectId(id),
         is_deleted: false,
     })
-    return paper
+    return folder
 }
 
 module.exports.getFolders = async (body) => {
@@ -178,20 +178,20 @@ module.exports.getFolders = async (body) => {
 
     let projectQuery = []
     let recordsTotal
-    let papers
+    let folders
 
     const sortQuery = {
         [sortingColumn]: sortingOrder,
         updated_at: -1,
     }
 
-    if (subject_id) {
+    if (category_id) {
         matchQuery = {
             ...matchQuery,
             'category_id': new mongoose.Types.ObjectId(category_id),
         }
     }
-
+ 
     const prePaginationQuery = [
         {
             $match: matchQuery,
@@ -199,34 +199,6 @@ module.exports.getFolders = async (body) => {
     ]
 
     const combinedQuery = [
-        {
-            $lookup: {
-                from: 'users',
-                let: { teacherID: '$teacher_id' },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: { $eq: ['$_id', '$$teacherID'] },
-                        },
-                    },
-                    {
-                        $project: {
-                            first_name: 1,
-                            last_name: 1,
-                            email: 1,
-                        },
-                    },
-                ],
-                as: 'teacher',
-            },
-        },
-        {
-            $addFields: {
-                teacher: {
-                    $arrayElemAt: ['$teacher', 0],
-                },
-            },
-        },
         {
             $lookup: {
                 from: 'subjects',
@@ -282,7 +254,7 @@ module.exports.getFolders = async (body) => {
         },
     ];
 
-    recordsTotal = await repository.findByAggregateQuery(PaperModel, [
+    recordsTotal = await repository.findByAggregateQuery(FolderModel, [
         ...prePaginationQuery,
         { $count: 'count' },
     ])
@@ -306,7 +278,7 @@ module.exports.getFolders = async (body) => {
     ]
 
     if (!search) {
-        papers = await repository.findByAggregateQuery(PaperModel, [
+        folders = await repository.findByAggregateQuery(FolderModel, [
             ...prePaginationQuery,
             ...paginationQuery,
             ...combinedQuery,
@@ -319,8 +291,6 @@ module.exports.getFolders = async (body) => {
                 $match: {
                     $or: [
                         { name: { $regex: search, $options: 'i' } },
-                        { 'teacher.first_name': { $regex: search, $options: "i" } },
-                        { 'teacher.last_name': { $regex: search, $options: "i" } },
                         { 'subject.name': { $regex: search, $options: "i" } },
                         { 'subject.code': { $regex: search, $options: "i" } },
                         { 'category.name': { $regex: search, $options: "i" } },
@@ -329,22 +299,22 @@ module.exports.getFolders = async (body) => {
             },
         ]
 
-        const data = await repository.findByAggregateQuery(PaperModel, [
+        const data = await repository.findByAggregateQuery(FolderModel, [
             {
                 $facet: {
-                    papers: [...searchQuery, ...paginationQuery],
+                    folders: [...searchQuery, ...paginationQuery],
                     recordsTotal: [...searchQuery, { $count: 'count' }],
                 },
             },
         ])
-        papers = pathOr([], [0, 'papers'], data)
+        folders = pathOr([], [0, 'folders'], data)
         recordsTotal = pathOr(0, [0, 'recordsTotal', 0, 'count'], data)
     }
 
-    const recordsFiltered = papers ? papers.length : 0
+    const recordsFiltered = folders ? folders.length : 0
 
     return {
-        papers,
+        folders,
         recordsTotal,
         recordsFiltered,
     }
@@ -360,20 +330,20 @@ module.exports.createFolder = async (body) => {
     if (!existingCategory) {
         throw new Error('Category id not valid!');
     }
+    
+    // const existingUser = await userService.getUserById(body.teacher_id);// need to check if teacher id
+    // if (!existingUser) {
+    //     throw new Error('User id not valid!');
+    // }
 
-    const existingUser = await userService.getUserById(body.teacher_id);// need to check if teacher id
-    if (!existingUser) {
-        throw new Error('User id not valid!');
-    }
-
-    const newPaperToSave = new CategoryModel(body);
-    const saveResult = await repository.save(newPaperToSave);
+    const newFoderToSave = new FolderModel(body);
+    const saveResult = await repository.save(newFoderToSave);
     return saveResult;
 }
 
 module.exports.updateFolder = async (body) => {
-    const existingPaper = await this.getPaperById(body._id);
-    if (!existingPaper) throw new Error('Invalid paper _id');
+    const existingPaper = await this.getFolderById(body._id);
+    if (!existingPaper) throw new Error('Invalid folder _id');
     if (body.subject_id) {
         const existingSubject = await subjectService.getSubjectById(body.subject_id);
         if (!existingSubject) {
@@ -388,15 +358,15 @@ module.exports.updateFolder = async (body) => {
         }
     }
 
-    if (body.teacher_id) {
-        const existingUser = await userService.getUserById(body.teacher_id);// need to check if teacher id
-        if (!existingUser) {
-            throw new Error('User id not valid!');
-        }
-    }
+    // if (body.teacher_id) {
+    //     const existingUser = await userService.getUserById(body.teacher_id);// need to check if teacher id
+    //     if (!existingUser) {
+    //         throw new Error('User id not valid!');
+    //     }
+    // }
 
-    let paperToUpdate = await repository.updateOne(
-        PaperModel,
+    let folderToUpdate = await repository.updateOne(
+        FolderModel,
         {
             _id: body._id,
         },
@@ -405,8 +375,8 @@ module.exports.updateFolder = async (body) => {
             new: true,
         }
     );
-    paperToUpdate = paperToUpdate.toObject();
-    return paperToUpdate;
+    folderToUpdate = folderToUpdate.toObject();
+    return folderToUpdate;
 }
 
 module.exports.toggleFolder = async (id) => {
@@ -415,7 +385,7 @@ module.exports.toggleFolder = async (id) => {
 
     if (existingPaper.is_active) {
         const paperToToggle = await repository.updateOne(
-            PaperModel,
+            FolderModel,
             {
                 _id: new mongoose.Types.ObjectId(id),
             },
@@ -432,7 +402,7 @@ module.exports.toggleFolder = async (id) => {
         return paperToToggle
     } else {
         const paperToToggle = await repository.updateOne(
-            PaperModel,
+            FolderModel,
             {
                 _id: new mongoose.Types.ObjectId(id),
             },
@@ -455,7 +425,7 @@ module.exports.deleteFolder = async (id) => {
     if (!existingPaper) throw new Error('Invalid paper _id');
 
     const paperToDelete = await repository.updateOne(
-        PaperModel,
+        FolderModel,
         {
             _id: new mongoose.Types.ObjectId(id),
         },

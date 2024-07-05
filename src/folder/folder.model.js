@@ -40,5 +40,5 @@ const schema = new mongoose.Schema(
 
 schema.index({ name: 1 }) // Indexing
 
-const model = mongoose.model('papers', schema)
+const model = mongoose.model('folders', schema)
 module.exports = model

@@ -161,7 +161,7 @@ module.exports.getPapers = async (body) => {
         order,
         page,
         search,
-        category_id,
+        folder_id,
         exclude = [],
     } = body
     const column = body.column || -1
@@ -188,7 +188,7 @@ module.exports.getPapers = async (body) => {
     if (subject_id) {
         matchQuery = {
             ...matchQuery,
-            'category_id': new mongoose.Types.ObjectId(category_id),
+            'folder_id': new mongoose.Types.ObjectId(folder_id),
         }
     }
 
@@ -274,9 +274,28 @@ module.exports.getPapers = async (body) => {
             },
         },
         {
+            $lookup: {
+                from: 'folders',
+                let: { categoryID: '$folder_id' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ['$_id', '$$folderID'] },
+                        },
+                    },
+                    {
+                        $project: {
+                            name: 1,
+                        },
+                    },
+                ],
+                as: 'folder',
+            },
+        },
+        {
             $addFields: {
                 category: {
-                    $arrayElemAt: ['$category', 0],
+                    $arrayElemAt: ['$folder', 0],
                 },
             },
         },
@@ -318,11 +337,15 @@ module.exports.getPapers = async (body) => {
             {
                 $match: {
                     $or: [
-                        { name: { $regex: search, $options: 'i' } },
+                        { title: { $regex: search, $options: 'i' } },
+                        { publish_date: { $regex: search, $options: 'i' } },
+                        { price: { $regex: search, $options: 'i' } },
                         { 'teacher.first_name': { $regex: search, $options: "i" } },
                         { 'teacher.last_name': { $regex: search, $options: "i" } },
                         { 'subject.name': { $regex: search, $options: "i" } },
                         { 'subject.code': { $regex: search, $options: "i" } },
+                        { 'category.name': { $regex: search, $options: "i" } },
+                        { 'folder.name': { $regex: search, $options: "i" } },
                         { 'category.name': { $regex: search, $options: "i" } },
                     ],
                 },
@@ -351,6 +374,7 @@ module.exports.getPapers = async (body) => {
 }
 
 module.exports.createPaper = async (body) => {
+    console.log("1");
     const existingSubject = await subjectService.getSubjectById(body.subject_id);
     if (!existingSubject) {
         throw new Error('Subject id not valid!');
@@ -366,7 +390,7 @@ module.exports.createPaper = async (body) => {
         throw new Error('User id not valid!');
     }
 
-    const newPaperToSave = new CategoryModel(body);
+    const newPaperToSave = new PaperModel(body);
     const saveResult = await repository.save(newPaperToSave);
     return saveResult;
 }
