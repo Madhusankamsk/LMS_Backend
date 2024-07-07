@@ -19,13 +19,13 @@ module.exports.createUser = joi.object().keys({
     first_name: joi.string().required(),
     last_name: joi.string().required(),
     profile_picture: joi.string(),
-    phone: joi.string().length(10).required(),
+    phone: joi.string().length(10),
     password: passwordValidation,
+    re_enter_password: passwordValidation,
     address: joi.string(),
     school: joi.string(),
     grade: joi.string(),
-    role: joi.string().required().max(24).min(24),
-    nic: joi.string().required().max(10).min(10),
+   // role: joi.string().required().max(24).min(24),
 })
 
 module.exports.loginUser = joi.object().keys({
@@ -38,16 +38,18 @@ module.exports.loginUser = joi.object().keys({
 
 module.exports.updateUser = joi.object().keys({
     _id: joi.string().required().max(24).min(24),
-    name: joi.string(),
-    age: joi.number(),
-    nic: joi.string().max(20),
-    address: joi.string(),
     email: joi
         .string()
-        .email({ tlds: { allow: false } })
-        .required(),
-    phone: joi.string().length(10).required(),
-    role: joi.string(),
+        .email({ tlds: { allow: false } }),
+    first_name: joi.string(),
+    last_name: joi.string(),
+    profile_picture: joi.string(),
+    phone: joi.string().length(10),
+    password: passwordValidation,
+    re_enter_password: passwordValidation,
+    address: joi.string(),
+    school: joi.string(),
+    grade: joi.string(),
 })
 
 module.exports.resetPassword = joi.object().keys({

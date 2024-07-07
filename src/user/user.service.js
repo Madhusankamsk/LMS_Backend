@@ -86,8 +86,6 @@ module.exports.getUserByPhoneNumber = async (phone, filterActive = true) => {
     return repository.findOne(UserModel, filter)
 }
 
-
-
 module.exports.createUser = async (body) => {
     console.log("1");
     const existingUser = await this.getUserByEmail(body.email, false)
@@ -102,11 +100,11 @@ module.exports.createUser = async (body) => {
     }
     console.log("3");
 
-    const exisingRole = await getUserRolesById(body.role)
-    if (!exisingRole) {
-        throw new Error('invalid role')
-    }
-    console.log("4");
+    // const exisingRole = await getUserRolesById(body.role)
+    // if (!exisingRole) {
+    //     throw new Error('invalid role')
+    // }
+    // console.log("4");
 
     if (!exisingRole.is_allowed) {
         throw new Error('This role has been disabled ')

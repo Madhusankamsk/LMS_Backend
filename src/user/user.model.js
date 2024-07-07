@@ -42,8 +42,8 @@ const schema = new mongoose.Schema(
             type: String,
         },
         role: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "user_roles",
+            type: String,
+            default: "Student",
             required: true,
         },
         status: {

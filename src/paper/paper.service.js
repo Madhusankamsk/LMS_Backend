@@ -13,13 +13,14 @@ const { setLimitToPositiveValue } = require('../../services/commonService')
 const { includeExcludeFields } = require('../../services/queryService')
 const subjectService = require('../subject/subject.service');
 const categoryService = require('../categories/category.service');
+const folderService = require('../folder/folder.service');
 const userService = require('../user/user.service');
 
 module.exports.togglePapersBySubject = async (subject_id, SubjectInactiveDate) => {
     const existingSubject = await subjectService.getSubjectById(subject_id);
     if (!existingSubject) throw new Error('Invalid subject _id');
 
-    if(existingSubject.is_active){
+    if (existingSubject.is_active) {
         const papersToToggle = await repository.updateMany(
             PaperModel,
             {
@@ -33,7 +34,7 @@ module.exports.togglePapersBySubject = async (subject_id, SubjectInactiveDate) =
                 },
             },
             {
-                new: true, 
+                new: true,
             }
         );
         return papersToToggle
@@ -42,7 +43,7 @@ module.exports.togglePapersBySubject = async (subject_id, SubjectInactiveDate) =
             PaperModel,
             {
                 subject_id: new mongoose.Types.ObjectId(subject_id),
-                inactive_date: null, 
+                inactive_date: null,
             },
             {
                 $set: {
@@ -51,7 +52,7 @@ module.exports.togglePapersBySubject = async (subject_id, SubjectInactiveDate) =
                 },
             },
             {
-                new: true, 
+                new: true,
             }
         );
         return papersToToggle
@@ -62,7 +63,7 @@ module.exports.togglePapersByCategory = async (category_id, CategoryInactiveDate
     const existingCategory = await categoryService.getCategoryById(category_id);
     if (!existingCategory) throw new Error('Invalid category _id');
 
-    if(existingCategory.is_active){
+    if (existingCategory.is_active) {
         const papersToToggle = await repository.updateMany(
             PaperModel,
             {
@@ -76,7 +77,7 @@ module.exports.togglePapersByCategory = async (category_id, CategoryInactiveDate
                 },
             },
             {
-                new: true, 
+                new: true,
             }
         );
         return papersToToggle
@@ -85,7 +86,7 @@ module.exports.togglePapersByCategory = async (category_id, CategoryInactiveDate
             PaperModel,
             {
                 category_id: new mongoose.Types.ObjectId(category_id),
-                inactive_date: null, 
+                inactive_date: null,
             },
             {
                 $set: {
@@ -94,7 +95,7 @@ module.exports.togglePapersByCategory = async (category_id, CategoryInactiveDate
                 },
             },
             {
-                new: true, 
+                new: true,
             }
         );
         return papersToToggle
@@ -117,7 +118,7 @@ module.exports.deletePapersBySubject = async (subject_id) => {
             },
         },
         {
-            new: true, 
+            new: true,
         }
     );
 
@@ -140,7 +141,7 @@ module.exports.deletePapersByCategory = async (category_id) => {
             },
         },
         {
-            new: true, 
+            new: true,
         }
     );
 
@@ -155,19 +156,245 @@ module.exports.getPaperById = async (id) => {
     return paper
 }
 
+// module.exports.getPapers = async (body) => {
+//     const existingCategory = await categoryService.getCategoryById(parent_id);
+//     if (existingCategory) {
+//         throw new Error('Invalid subject _id');
+//     }
+//     else {
+//         const existingFolder = await folderService.getFolderById(parent_id);
+//         if (!existingFolder) throw new Error('Invalid parent _id');
+//     }
+//     if (!existingCategory) throw new Error('Invalid subject _id');
+//     const {
+//         limit,
+//         order,
+//         page,
+//         search,
+//         folder_id: parent_id,
+//         exclude = [],
+//     } = body
+//     const column = body.column || -1
+
+//     const sortingOrder =
+//         order === sortingConfig.sortingOrder.descending || !order ? -1 : 1
+//     const sortingColumn = sortingConfig.sortingColumn.update_at[column];
+
+//     let matchQuery = {
+//         is_deleted: {
+//             $ne: true,
+//         },
+//     };
+
+//     let projectQuery = []
+//     let recordsTotal
+//     let papers
+
+//     const sortQuery = {
+//         [sortingColumn]: sortingOrder,
+//         updated_at: -1,
+//     }
+
+//     if (subject_id) {
+//         matchQuery = {
+//             ...matchQuery,
+//             'folder_id': new mongoose.Types.ObjectId(parent_id),
+//         }
+//     }
+
+//     const prePaginationQuery = [
+//         {
+//             $match: matchQuery,
+//         },
+//     ]
+
+//     const combinedQuery = [
+//         {
+//             $lookup: {
+//                 from: 'users',
+//                 let: { teacherID: '$teacher_id' },
+//                 pipeline: [
+//                     {
+//                         $match: {
+//                             $expr: { $eq: ['$_id', '$$teacherID'] },
+//                         },
+//                     },
+//                     {
+//                         $project: {
+//                             first_name: 1,
+//                             last_name: 1,
+//                             email: 1,
+//                         },
+//                     },
+//                 ],
+//                 as: 'teacher',
+//             },
+//         },
+//         {
+//             $addFields: {
+//                 teacher: {
+//                     $arrayElemAt: ['$teacher', 0],
+//                 },
+//             },
+//         },
+//         {
+//             $lookup: {
+//                 from: 'subjects',
+//                 let: { subjectID: '$subject_id' },
+//                 pipeline: [
+//                     {
+//                         $match: {
+//                             $expr: { $eq: ['$_id', '$$subjectID'] },
+//                         },
+//                     },
+//                     {
+//                         $project: {
+//                             name: 1,
+//                             code: 1,
+//                         },
+//                     },
+//                 ],
+//                 as: 'subject',
+//             },
+//         },
+//         {
+//             $addFields: {
+//                 subject: {
+//                     $arrayElemAt: ['$subject', 0],
+//                 },
+//             },
+//         },
+//         {
+//             $lookup: {
+//                 from: 'categories',
+//                 let: { categoryID: '$category_id' },
+//                 pipeline: [
+//                     {
+//                         $match: {
+//                             $expr: { $eq: ['$_id', '$$categoryID'] },
+//                         },
+//                     },
+//                     {
+//                         $project: {
+//                             name: 1,
+//                         },
+//                     },
+//                 ],
+//                 as: 'category',
+//             },
+//         },
+//         {
+//             $lookup: {
+//                 from: 'folders',
+//                 let: { categoryID: '$folder_id' },
+//                 pipeline: [
+//                     {
+//                         $match: {
+//                             $expr: { $eq: ['$_id', '$$folderID'] },
+//                         },
+//                     },
+//                     {
+//                         $project: {
+//                             name: 1,
+//                         },
+//                     },
+//                 ],
+//                 as: 'folder',
+//             },
+//         },
+//         {
+//             $addFields: {
+//                 category: {
+//                     $arrayElemAt: ['$folder', 0],
+//                 },
+//             },
+//         },
+//     ];
+
+//     recordsTotal = await repository.findByAggregateQuery(PaperModel, [
+//         ...prePaginationQuery,
+//         { $count: 'count' },
+//     ])
+
+//     recordsTotal = pathOr(0, [0, 'count'], recordsTotal)
+//     const pageLimit = setLimitToPositiveValue(limit, recordsTotal)
+
+//     if (exclude.length >= 1) {
+//         projectQuery = [
+//             {
+//                 $project: includeExcludeFields(exclude, 0),
+//             },
+//         ]
+//     }
+
+//     const paginationQuery = [
+//         { $sort: sortQuery },
+//         { $skip: page ? pageLimit * (page - 1) : 0 },
+//         { $limit: +pageLimit || +recordsTotal },
+//         ...projectQuery,
+//     ]
+
+//     if (!search) {
+//         papers = await repository.findByAggregateQuery(PaperModel, [
+//             ...prePaginationQuery,
+//             ...paginationQuery,
+//             ...combinedQuery,
+//         ])
+//     } else {
+//         const searchQuery = [
+//             ...prePaginationQuery,
+//             ...combinedQuery,
+//             {
+//                 $match: {
+//                     $or: [
+//                         { title: { $regex: search, $options: 'i' } },
+//                         { publish_date: { $regex: search, $options: 'i' } },
+//                         { price: { $regex: search, $options: 'i' } },
+//                         { 'teacher.first_name': { $regex: search, $options: "i" } },
+//                         { 'teacher.last_name': { $regex: search, $options: "i" } },
+//                         { 'subject.name': { $regex: search, $options: "i" } },
+//                         { 'subject.code': { $regex: search, $options: "i" } },
+//                         { 'category.name': { $regex: search, $options: "i" } },
+//                         { 'folder.name': { $regex: search, $options: "i" } },
+//                         { 'category.name': { $regex: search, $options: "i" } },
+//                     ],
+//                 },
+//             },
+//         ]
+
+//         const data = await repository.findByAggregateQuery(PaperModel, [
+//             {
+//                 $facet: {
+//                     papers: [...searchQuery, ...paginationQuery],
+//                     recordsTotal: [...searchQuery, { $count: 'count' }],
+//                 },
+//             },
+//         ])
+//         papers = pathOr([], [0, 'papers'], data)
+//         recordsTotal = pathOr(0, [0, 'recordsTotal', 0, 'count'], data)
+//     }
+
+//     const recordsFiltered = papers ? papers.length : 0
+
+//     return {
+//         papers,
+//         recordsTotal,
+//         recordsFiltered,
+//     }
+// }
+
 module.exports.getPapers = async (body) => {
     const {
         limit,
         order,
         page,
         search,
-        folder_id,
+        parent_id,
         exclude = [],
-    } = body
-    const column = body.column || -1
+    } = body;
+    const column = body.column || -1;
 
-    const sortingOrder =
-        order === sortingConfig.sortingOrder.descending || !order ? -1 : 1
+    const sortingOrder = order === sortingConfig.sortingOrder.descending || !order ? -1 : 1;
     const sortingColumn = sortingConfig.sortingColumn.update_at[column];
 
     let matchQuery = {
@@ -176,19 +403,34 @@ module.exports.getPapers = async (body) => {
         },
     };
 
-    let projectQuery = []
-    let recordsTotal
-    let papers
+    let projectQuery = [];
+    let recordsTotal;
+    let papers;
 
     const sortQuery = {
         [sortingColumn]: sortingOrder,
         updated_at: -1,
-    }
+    };
 
-    if (subject_id) {
-        matchQuery = {
-            ...matchQuery,
-            'folder_id': new mongoose.Types.ObjectId(folder_id),
+    if (parent_id) {
+        const existingCategory = await categoryService.getCategoryById(parent_id);
+
+        if (existingCategory) {
+            matchQuery = {
+                ...matchQuery,
+                'category_id': new mongoose.Types.ObjectId(parent_id),
+            };
+        } else {
+            const existingFolder = await folderService.getFolderById(parent_id);
+
+            if (!existingFolder) {
+                throw new Error('Invalid parent _id');
+            }
+
+            matchQuery = {
+                ...matchQuery,
+                'folder_id': new mongoose.Types.ObjectId(parent_id),
+            };
         }
     }
 
@@ -196,7 +438,7 @@ module.exports.getPapers = async (body) => {
         {
             $match: matchQuery,
         },
-    ]
+    ];
 
     const combinedQuery = [
         {
@@ -276,7 +518,7 @@ module.exports.getPapers = async (body) => {
         {
             $lookup: {
                 from: 'folders',
-                let: { categoryID: '$folder_id' },
+                let: { folderID: '$folder_id' },
                 pipeline: [
                     {
                         $match: {
@@ -295,6 +537,9 @@ module.exports.getPapers = async (body) => {
         {
             $addFields: {
                 category: {
+                    $arrayElemAt: ['$category', 0],
+                },
+                folder: {
                     $arrayElemAt: ['$folder', 0],
                 },
             },
@@ -304,17 +549,17 @@ module.exports.getPapers = async (body) => {
     recordsTotal = await repository.findByAggregateQuery(PaperModel, [
         ...prePaginationQuery,
         { $count: 'count' },
-    ])
+    ]);
 
-    recordsTotal = pathOr(0, [0, 'count'], recordsTotal)
-    const pageLimit = setLimitToPositiveValue(limit, recordsTotal)
+    recordsTotal = recordsTotal[0]?.count || 0;
+    const pageLimit = setLimitToPositiveValue(limit, recordsTotal);
 
     if (exclude.length >= 1) {
         projectQuery = [
             {
                 $project: includeExcludeFields(exclude, 0),
             },
-        ]
+        ];
     }
 
     const paginationQuery = [
@@ -322,14 +567,14 @@ module.exports.getPapers = async (body) => {
         { $skip: page ? pageLimit * (page - 1) : 0 },
         { $limit: +pageLimit || +recordsTotal },
         ...projectQuery,
-    ]
+    ];
 
     if (!search) {
         papers = await repository.findByAggregateQuery(PaperModel, [
             ...prePaginationQuery,
             ...paginationQuery,
             ...combinedQuery,
-        ])
+        ]);
     } else {
         const searchQuery = [
             ...prePaginationQuery,
@@ -340,17 +585,16 @@ module.exports.getPapers = async (body) => {
                         { title: { $regex: search, $options: 'i' } },
                         { publish_date: { $regex: search, $options: 'i' } },
                         { price: { $regex: search, $options: 'i' } },
-                        { 'teacher.first_name': { $regex: search, $options: "i" } },
-                        { 'teacher.last_name': { $regex: search, $options: "i" } },
-                        { 'subject.name': { $regex: search, $options: "i" } },
-                        { 'subject.code': { $regex: search, $options: "i" } },
-                        { 'category.name': { $regex: search, $options: "i" } },
-                        { 'folder.name': { $regex: search, $options: "i" } },
-                        { 'category.name': { $regex: search, $options: "i" } },
+                        { 'teacher.first_name': { $regex: search, $options: 'i' } },
+                        { 'teacher.last_name': { $regex: search, $options: 'i' } },
+                        { 'subject.name': { $regex: search, $options: 'i' } },
+                        { 'subject.code': { $regex: search, $options: 'i' } },
+                        { 'category.name': { $regex: search, $options: 'i' } },
+                        { 'folder.name': { $regex: search, $options: 'i' } },
                     ],
                 },
             },
-        ]
+        ];
 
         const data = await repository.findByAggregateQuery(PaperModel, [
             {
@@ -359,19 +603,19 @@ module.exports.getPapers = async (body) => {
                     recordsTotal: [...searchQuery, { $count: 'count' }],
                 },
             },
-        ])
-        papers = pathOr([], [0, 'papers'], data)
-        recordsTotal = pathOr(0, [0, 'recordsTotal', 0, 'count'], data)
+        ]);
+        papers = data[0]?.papers || [];
+        recordsTotal = data[0]?.recordsTotal[0]?.count || 0;
     }
 
-    const recordsFiltered = papers ? papers.length : 0
+    const recordsFiltered = papers ? papers.length : 0;
 
     return {
         papers,
         recordsTotal,
         recordsFiltered,
-    }
-}
+    };
+};
 
 module.exports.createPaper = async (body) => {
     console.log("1");
@@ -388,6 +632,13 @@ module.exports.createPaper = async (body) => {
     const existingUser = await userService.getUserById(body.teacher_id);// need to check if teacher id
     if (!existingUser) {
         throw new Error('User id not valid!');
+    }
+
+    if (body.folder_id) {
+        const existingFolder = await folderService.getFolderById(body.folder_id);
+        if (!existingFolder) {
+            throw new Error('Folder id not valid!');
+        }
     }
 
     const newPaperToSave = new PaperModel(body);
@@ -416,6 +667,13 @@ module.exports.updatePaper = async (body) => {
         const existingUser = await userService.getUserById(body.teacher_id);// need to check if teacher id
         if (!existingUser) {
             throw new Error('User id not valid!');
+        }
+    }
+
+    if (body.folder_id) {
+        const existingFolder = await folderService.getFolderById(body.folder_id);
+        if (!existingFolder) {
+            throw new Error('Folder id not valid!');
         }
     }
 

@@ -22,6 +22,10 @@ const schema = new mongoose.Schema(
             ref: "users",
             required: true,
         },
+        folder_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "folders",
+        },
         duration: {
             type: String,
             required: true,
@@ -57,6 +61,11 @@ const schema = new mongoose.Schema(
         },
         video_link: {
             type: String,
+        },
+        has_folder: {
+            type: Boolean,
+            required : true,
+            default: false,
         },
         is_active: {
             type: Boolean,
