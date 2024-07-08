@@ -32,6 +32,10 @@ const schema = new mongoose.Schema(
             trim: true,
             required: true,
         },
+        salt: {
+            type: String,
+            required: true,
+        },
         address: {
             type: String,
         },
@@ -53,12 +57,12 @@ const schema = new mongoose.Schema(
         },
         is_active: {
             type: Boolean,
-            required : true,
+            required: true,
             default: true,
         },
         is_deleted: {
             type: Boolean,
-            required : true,
+            required: true,
             default: false,
         },
         delete_date: {
@@ -69,7 +73,7 @@ const schema = new mongoose.Schema(
 );
 
 schema.methods.validatePassword = function (password) {
-    const salt = this.password.split('$')[0]; 
+    const salt = this.password.split('$')[0];
     const hash = crypto
         .pbkdf2Sync(password, salt, 10000, 512, "sha512")
         .toString("hex");
