@@ -6,8 +6,6 @@ const { pathOr } = require('ramda')
 
 const repository = require('../../services/repositoryService')
 const UserModel = require('./user.model')
-const { getUserRolesById } = require('../user-role/user-role.service')
-
 
 // const {
 //     createUserMail,
