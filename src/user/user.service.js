@@ -106,10 +106,10 @@ module.exports.createUser = async (body) => {
     // }
     // console.log("4");
 
-    if (!exisingRole.is_allowed) {
-        throw new Error('This role has been disabled ')
-    }
-    console.log("5");
+    // if (!exisingRole.is_allowed) {
+    //     throw new Error('This role has been disabled ')
+    // }
+    // console.log("5");
     
     let newUser = new UserModel(body)
     await repository.save(newUser)
