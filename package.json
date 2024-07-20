@@ -21,6 +21,7 @@
     "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.0",
+    "nodemailer": "^6.9.14",
     "ramda": "^0.29.1"
   },
   "devDependencies": {

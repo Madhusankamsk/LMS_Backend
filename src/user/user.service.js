@@ -6,6 +6,8 @@ const { pathOr } = require('ramda')
 
 const repository = require('../../services/repositoryService')
 const UserModel = require('./user.model')
+const nodemailer = require('nodemailer')
+// import nodemailer from "nodemailer";
 
 // const {
 //     createUserMail,
@@ -108,13 +110,18 @@ module.exports.createUser = async (body) => {
     //     throw new Error('This role has been disabled ')
     // }
     // console.log("5");
-    
+
+    console.log("body password: " + body.password);
+
     let newUser = new UserModel(body)
+    newUser.setPassword(body.password)
     await repository.save(newUser)
     console.log("6");
 
+    
     newUser = newUser.toObject()
     delete newUser.password
+    delete newUser.salt
     console.log("7");
 
     const fullName = newUser.first_name + " " + newUser.last_name;
@@ -126,7 +133,7 @@ module.exports.createUser = async (body) => {
     //     new_password: password,
     //     subject: 'Congratulations! Your account has been created',
     // })
-    console.log("9");
+    console.log(newUser);
 
     return newUser
 }

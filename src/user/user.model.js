@@ -82,11 +82,10 @@ schema.methods.validatePassword = function (password) {
 };
 
 schema.methods.setPassword = function (password) {
-    const salt = crypto.randomBytes(16).toString("hex");
-    const hash = crypto
-        .pbkdf2Sync(password, salt, 10000, 512, "sha512")
+    this.salt = crypto.randomBytes(16).toString("hex");
+    this.password = crypto
+        .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
         .toString("hex");
-    this.password = `${salt}$${hash}`;
 }
 
 schema.index({ email: 1, school: 1 }); // Indexing
