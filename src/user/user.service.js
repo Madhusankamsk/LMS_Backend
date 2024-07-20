@@ -87,45 +87,27 @@ module.exports.getUserByPhoneNumber = async (phone, filterActive = true) => {
 }
 
 module.exports.createUser = async (body) => {
-    console.log("1");
     const existingUser = await this.getUserByEmail(body.email, false)
     if (existingUser) {
         throw new Error('Email already exists.')
     }
-    console.log("2");
 
     const existingPhone = await this.getUserByPhoneNumber(body.phone, false)
     if (existingPhone) {
         throw new Error('Phone number already exists.')
     }
-    console.log("3");
-
-    // const exisingRole = await getUserRolesById(body.role)
-    // if (!exisingRole) {
-    //     throw new Error('invalid role')
-    // }
-    // console.log("4");
-
-    // if (!exisingRole.is_allowed) {
-    //     throw new Error('This role has been disabled ')
-    // }
-    // console.log("5");
-
-    console.log("body password: " + body.password);
 
     let newUser = new UserModel(body)
     newUser.setPassword(body.password)
     await repository.save(newUser)
     console.log("6");
 
-    
     newUser = newUser.toObject()
     delete newUser.password
     delete newUser.salt
-    console.log("7");
+    delete newUser.role
 
     const fullName = newUser.first_name + " " + newUser.last_name;
-    console.log("8");
 
     // await createUserMail({
     //     name: fullName,

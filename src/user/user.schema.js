@@ -21,7 +21,6 @@ module.exports.createUser = joi.object().keys({
     last_name: joi.string().required(),
     profile_picture: joi.string(),
     phone: joi.string().length(10).required(),
-    role: joi.string().required(),
     password: passwordValidation,
     address: joi.string(),
     school: joi.string(),
