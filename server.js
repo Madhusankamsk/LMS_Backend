@@ -17,13 +17,13 @@ server.use("/api", require("./routes"));
 const { isProduction } = config;
 if (isProduction) {
     mongoose.connect(`${config.database}`, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
+      // useUnifiedTopology: true,
+      // useNewUrlParser: true,
     });
   } else {
     mongoose.connect(`${config.testDatabase}`, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
+      // useUnifiedTopology: true,
+      // useNewUrlParser: true,
     });
     mongoose.set("debug", true);
   }
