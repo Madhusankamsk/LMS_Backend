@@ -2,19 +2,6 @@
 const { superAdmin } = require("../../config/permissionConfig").userRoles;
 
 module.exports.permissions = {
-  usersGetAll: {
-    path: "/",
-    granted: [superAdmin],
-  },
-  usersGetById: {
-    path: "/:id",
-  },
-  usersSave: {
-    path: "/",
-  },
-  superAdminRegister: {
-    path: "/super_admin_register",
-  },
   usersCreate: {
     path: "/create",
     granted: [superAdmin],
@@ -27,6 +14,26 @@ module.exports.permissions = {
   },
   userForgotPasswordReset: {
     path: "/forget-password/reset",
+  },
+
+
+
+
+
+
+
+  usersGetAll: {
+    path: "/",
+    granted: [superAdmin],
+  },
+  usersGetById: {
+    path: "/:id",
+  },
+  usersSave: {
+    path: "/",
+  },
+  superAdminRegister: {
+    path: "/super_admin_register",
   },
   userPasswordResetAdmin: {
     path: "/password/reset",

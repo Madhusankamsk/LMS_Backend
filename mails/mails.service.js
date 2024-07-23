@@ -1,10 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const sgMail = require("@sendgrid/mail");
 const config = require("../config/config");
 const nodemailer = require("nodemailer");
 
 const { createUser } = require("./templates/createUserEmail");
-// sgMail.setApiKey(process.env.NODEMAILER_PASSWORD);
+const { forgotPassword } = require("./templates/forgotPasswordEmail");
 
 const logoAttachment = {
     filename: "logo.jpg",
@@ -14,28 +13,21 @@ const logoAttachment = {
     disposition: "inline",
 };
 
-
-
-
 async function sendMail(msg) {
-    //console.log("Mailer function called");
 
     let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
 
-        secure: false, // true for 465, false for other ports
+        secure: false, 
         requireTLS: true,
         auth: {
-            user: process.env.NODEMAILER_EMAIL, // generated ethereal user
-            pass: process.env.NODEMAILER_PASSWORD, // generated ethereal password
+            user: process.env.NODEMAILER_EMAIL, 
+            pass: process.env.NODEMAILER_PASSWORD, 
         },
     });
 
-    let info = await transporter.sendMail(msg);
-
-    // console.log("Message sent: %s", info.messageId);
-    // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    await transporter.sendMail(msg);
 }
 
 module.exports.createUserMail = async (body) => {
@@ -44,6 +36,18 @@ module.exports.createUserMail = async (body) => {
         from: process.env.NODEMAILER_EMAIL,
         subject: body.subject,
         html: createUser(body),
+        attachments: [logoAttachment],
+    };
+
+    await sendMail(msg);
+};
+
+module.exports.forgotPasswordMail = async (body) => {
+    const msg = {
+        to: body.to,
+        from: process.env.NODEMAILER_EMAIL,
+        subject: body.subject,
+        html: forgotPassword(body),
         attachments: [logoAttachment],
     };
 

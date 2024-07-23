@@ -69,6 +69,12 @@ const schema = new mongoose.Schema(
         delete_date: {
             type: Date,
         },
+        password_reset_code: {
+            type: String,
+        },
+        password_reset_code_sent_at: {
+            type: Date,
+        },
     },
     { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );

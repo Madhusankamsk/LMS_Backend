@@ -16,6 +16,42 @@ router.route(permissions.usersCreate.path).post(
     controller.createUser
 )
 
+router.route(permissions.usersLoginEmail.path).post(
+    validator.validateBody(schema.loginUser), 
+    controller.loginUser
+)
+
+router.route(permissions.usersForgetPassword.path).post(
+    validator.validateBody(schema.forgetPassword),
+    controller.userForgotPasswordEmail
+)
+
+router.route(permissions.userForgotPasswordReset.path).post(
+    validator.validateBody(schema.forgetPasswordReset),
+    controller.userForgotPasswordResetWithCode
+)
+
+router.route(permissions.userResetPassword.path).post(
+validator.validateHeader(),
+// validator.validateRouteAccessByRole({
+//     baseRoute: '/users',
+//     action: 'edit',
+// }),
+validator.validateBody(schema.resetPassword),
+controller.resetPasswordAdmin
+)
+
+
+
+
+
+
+
+
+
+
+
+
 router.route(permissions.usersUpdate.path).put(
     validator.validateHeader(),
     // validator.validateRouteAccessByRole({
@@ -61,35 +97,10 @@ router.route(permissions.usersGetById.path).get(
     controller.getUserById
 )
 
-router.route(permissions.usersLoginEmail.path).post(
-    validator.validateBody(schema.loginUser), 
-    controller.loginUser
-)
-
 router.route(permissions.usersGetAll.path).get(
         validator.validateHeader(),
         validator.validateQueryParameters(schema.getAllUsers),
         controller.getUsers
-)
-
-router.route(permissions.usersForgetPassword.path).post(
-        validator.validateBody(schema.forgetPassword),
-        controller.userForgotPasswordEmail
-)
-
-router.route(permissions.userForgotPasswordReset.path).post(
-        validator.validateBody(schema.forgetPasswordReset),
-        controller.userForgotPasswordResetWithCode
-)
-
-router.route(permissions.userResetPassword.path).post(
-    validator.validateHeader(),
-    // validator.validateRouteAccessByRole({
-    //     baseRoute: '/users',
-    //     action: 'edit',
-    // }),
-    validator.validateBody(schema.resetPassword),
-    controller.resetPasswordAdmin
 )
 
 router.route(permissions.userPasswordResetUser.path).post(
