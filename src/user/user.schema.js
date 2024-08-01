@@ -51,6 +51,13 @@ module.exports.forgetPasswordReset = joi.object().keys({
     password_reset_code: joi.string().required(),
 })
 
+module.exports.emailVerify = joi.object().keys({
+    email: joi
+        .string()
+        .email({ tlds: { allow: false } })
+        .required(),
+})
+
 
 
 

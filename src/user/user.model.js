@@ -75,6 +75,12 @@ const schema = new mongoose.Schema(
         password_reset_code_sent_at: {
             type: Date,
         },
+        email_verify_code: {
+            type: String,
+        },
+        email_verify_code_sent_at: {
+            type: Date,
+        },
     },
     { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );

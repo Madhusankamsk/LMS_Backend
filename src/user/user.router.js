@@ -31,6 +31,28 @@ router.route(permissions.userForgotPasswordReset.path).post(
     controller.userForgotPasswordResetWithCode
 )
 
+router.route(permissions.userEmailVerify.path).post(
+    validator.validateBody(schema.emailVerify),
+    controller.userEmailVerify
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 router.route(permissions.userResetPassword.path).post(
 validator.validateHeader(),
 // validator.validateRouteAccessByRole({

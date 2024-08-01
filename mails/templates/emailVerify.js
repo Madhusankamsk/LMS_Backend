@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-module.exports.createUser = (newUser) => {
-    const { name, new_password, subject } = newUser
+module.exports.verifyMail = (newUser) => {
+    const { name, email_reset_code, subject } = newUser
 
     const emailTemplate = `
         <!DOCTYPE html>
@@ -63,13 +63,8 @@ module.exports.createUser = (newUser) => {
               <div class="content">
                 <p>Hello ${name},</p>
                 <p>
-                  Your account has been successfully created. Below is the password for
-                  your initial login:
-                </p>
-                <p><strong>${new_password}</strong></p>
-                <p>
-                  We recommend changing your password after the first login for security
-                  purposes.
+                  Your are request to verify your email. Below is the email verification code for
+                  your account:
                 </p>
               </div>
               <div class="footer">

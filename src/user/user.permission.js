@@ -16,6 +16,10 @@ module.exports.permissions = {
     path: "/forget-password/reset",
   },
 
+  userEmailVerify: {
+    path: "/email-verify",
+  },
+
 
 
 

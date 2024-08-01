@@ -42,14 +42,17 @@ module.exports.createUserMail = async (body) => {
     await sendMail(msg);
 };
 
-module.exports.forgotPasswordMail = async (body) => {
+module.exports.verifyMail = async (body) => {
     const msg = {
         to: body.to,
         from: process.env.NODEMAILER_EMAIL,
         subject: body.subject,
-        html: forgotPassword(body),
+        html: verifyMail(body),
         attachments: [logoAttachment],
     };
 
     await sendMail(msg);
 };
+
+
+

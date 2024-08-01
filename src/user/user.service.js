@@ -14,6 +14,7 @@ const userConfig = require('../../config/userConfig')
 const {
     createUserMail,
     forgotPasswordMail,
+    verifyMail,
 } = require('../../mails/mails.service')
 
 const {
@@ -256,8 +257,33 @@ module.exports.userForgotPasswordReset = async (body) => {
     return 'success'
 }
 
+module.exports.userEmailVerify = async (body) => {
+    const email = body.email
+    const user = await this.getUserByEmail(email, false)
 
+    if (!user) {
+        throw new Error('invalid email')
+    }
 
+    const passwordRestCode = generateFourByteCode();
+
+    await this.updateUser({
+        _id: user._id,
+        email_verify_code: passwordRestCode,
+        email_verify_code_sent_at: new Date(),
+    })
+
+    const fullName = user.first_name + " " + user.last_name;
+
+    await verifyMail({
+        name: fullName,
+        to: user.email,
+        email_reset_code: passwordRestCode,
+        subject: 'Your Email Verify Code',
+    })
+
+    return 'success'
+}
 
 module.exports.userPasswordReset = async (body) => {
     const user = await this.getUserById({

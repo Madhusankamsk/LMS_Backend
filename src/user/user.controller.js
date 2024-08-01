@@ -38,10 +38,6 @@ module.exports.userForgotPasswordEmail = async (req, res) => {
   }
 };
 
-
-
-
-
 module.exports.userForgotPasswordResetWithCode = async (req, res) => {
   try {
     const data = await service.userForgotPasswordReset(req.body);
@@ -122,3 +118,13 @@ module.exports.resetPasswordUser = async (req, res) => {
     return customError(error.message, res);
   }
 }
+
+module.exports.userEmailVerify = async (req, res) => {
+  try {
+    const data = await service.userEmailVerify(req.body);
+    return successWithData(data, res);
+  } catch (error) {
+    return customError(error.message, res);
+  }
+}
+
