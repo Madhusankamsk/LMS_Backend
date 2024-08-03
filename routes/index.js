@@ -17,5 +17,6 @@ router.use("/subject", require("../src/subject/subject.router"));
 router.use("/papers", require("../src/paper/paper.router"));
 router.use("/categories", require("../src/categories/category.router"));
 router.use("/folders", require("../src/folder/folder.router"));
+router.use("/paper-enroll", require("../src/paper-enroll/paper-enroll.router"));
 
 module.exports = router;

@@ -51,12 +51,39 @@ module.exports.forgetPasswordReset = joi.object().keys({
     password_reset_code: joi.string().required(),
 })
 
-module.exports.emailVerify = joi.object().keys({
+module.exports.userEmailVerify = joi.object().keys({
     email: joi
         .string()
         .email({ tlds: { allow: false } })
         .required(),
 })
+
+module.exports.emailVerifyWithCode = joi.object().keys({
+    email: joi
+        .string()
+        .email({ tlds: { allow: false } })
+        .required(),
+    email_verify_code: joi.string().required(),
+})
+
+module.exports.updateUser = joi.object().keys({
+    _id: joi.string().required().max(24).min(24),
+    email: joi
+        .string()
+        .email({ tlds: { allow: false } }),
+    first_name: joi.string(),
+    last_name: joi.string(),
+    profile_picture: joi.string(),
+    phone: joi.string().length(10),
+    password: passwordValidation,
+    re_enter_password: passwordValidation,
+    address: joi.string(),
+    school: joi.string(),
+    grade: joi.string(),
+})
+
+
+
 
 
 
@@ -78,22 +105,6 @@ module.exports.resetPassword = joi.object().keys({
         .required(),
     new_password: passwordValidation,
     password: joi.string().required(),
-})
-
-module.exports.updateUser = joi.object().keys({
-    _id: joi.string().required().max(24).min(24),
-    email: joi
-        .string()
-        .email({ tlds: { allow: false } }),
-    first_name: joi.string(),
-    last_name: joi.string(),
-    profile_picture: joi.string(),
-    phone: joi.string().length(10),
-    password: passwordValidation,
-    re_enter_password: passwordValidation,
-    address: joi.string(),
-    school: joi.string(),
-    grade: joi.string(),
 })
 
 module.exports.passwordResetAdmin = joi.object().keys({

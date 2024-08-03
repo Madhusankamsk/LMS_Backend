@@ -10,10 +10,11 @@ const nodemailer = require('nodemailer')
 const { validatePassword } = require('../../services/password')
 const moment = require('moment')
 const userConfig = require('../../config/userConfig')
+const { userStatus } = require("../../config/permissionConfig");
 
 const {
     createUserMail,
-    forgotPasswordMail,
+    forgotPassword,
     verifyMail,
 } = require('../../mails/mails.service')
 
@@ -221,7 +222,7 @@ module.exports.userForgotPasswordEmail = async (body) => {
 
     const fullName = user.first_name + " " + user.last_name;
 
-    await forgotPasswordMail({
+    await forgotPassword({
         name: fullName,
         to: user.email,
         password_reset_code: passwordRestCode,
@@ -258,6 +259,7 @@ module.exports.userForgotPasswordReset = async (body) => {
 }
 
 module.exports.userEmailVerify = async (body) => {
+    console.log("sefghsaj")
     const email = body.email
     const user = await this.getUserByEmail(email, false)
 
@@ -265,11 +267,11 @@ module.exports.userEmailVerify = async (body) => {
         throw new Error('invalid email')
     }
 
-    const passwordRestCode = generateFourByteCode();
+    const emailResetCode = generateFourByteCode();
 
     await this.updateUser({
         _id: user._id,
-        email_verify_code: passwordRestCode,
+        email_verify_code: emailResetCode,
         email_verify_code_sent_at: new Date(),
     })
 
@@ -278,24 +280,57 @@ module.exports.userEmailVerify = async (body) => {
     await verifyMail({
         name: fullName,
         to: user.email,
-        email_reset_code: passwordRestCode,
+        email_verify_code: emailResetCode,
         subject: 'Your Email Verify Code',
     })
 
     return 'success'
 }
 
-module.exports.userPasswordReset = async (body) => {
-    const user = await this.getUserById({
-        id: body._id,
-    })
+module.exports.userEmailVerifyWithCode = async (body) => {
+    const user = await this.getUserByEmail(body.email, false)
 
     if (!user) {
         throw new Error('user not found')
     }
 
-    user.setPassword(body.password)
-    await repository.save(user)
+    if (body.email_verify_code !== user.email_verify_code) {
+        throw new Error('Invalid reset code.')
+    }
+
+    if (
+        new Date(user.email_verify_code_sent_at) <
+        moment()
+            .subtract(userConfig.passwordResetCodeExpireDuration, 'minutes')
+            .toDate()
+    ) {
+        throw new Error('Reset code expired.')
+    }
+
+    await this.updateUser({
+        _id: user._id,
+        status: userStatus.confirmed
+    })
 
     return 'success'
 }
+
+
+
+// module.exports.userPasswordReset = async (body) => {
+//     const user = await this.getUserById({
+//         id: body._id,
+//     })
+
+//     if (!user) {
+//         throw new Error('user not found')
+//     }
+
+//     user.setPassword(body.password)
+//     await repository.save(user)
+
+//     return 'success'
+// }
+
+
+

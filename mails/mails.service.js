@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer");
 
 const { createUser } = require("./templates/createUserEmail");
 const { forgotPassword } = require("./templates/forgotPasswordEmail");
+const { verifyMail } = require("./templates/verifyMail");
 
 const logoAttachment = {
     filename: "logo.jpg",
@@ -36,6 +37,18 @@ module.exports.createUserMail = async (body) => {
         from: process.env.NODEMAILER_EMAIL,
         subject: body.subject,
         html: createUser(body),
+        attachments: [logoAttachment],
+    };
+
+    await sendMail(msg);
+};
+
+module.exports.forgotPassword = async (body) => {
+    const msg = {
+        to: body.to,
+        from: process.env.NODEMAILER_EMAIL,
+        subject: body.subject,
+        html: forgotPassword(body),
         attachments: [logoAttachment],
     };
 

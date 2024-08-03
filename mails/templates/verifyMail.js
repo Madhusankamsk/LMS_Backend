@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 module.exports.verifyMail = (newUser) => {
-    const { name, email_reset_code, subject } = newUser
+    const { name, email_verify_code, subject } = newUser
 
     const emailTemplate = `
         <!DOCTYPE html>
@@ -64,7 +64,7 @@ module.exports.verifyMail = (newUser) => {
                 <p>Hello ${name},</p>
                 <p>
                   Your are request to verify your email. Below is the email verification code for
-                  your account:
+                  your account:${email_verify_code}
                 </p>
               </div>
               <div class="footer">

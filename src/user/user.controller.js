@@ -58,12 +58,46 @@ module.exports.userPasswordReset = async (req, res) => {
 
 module.exports.updateUser = async (req, res) => {
   try {
+    console.log("awfgh")
     const data = await service.updateUser(req.body);
     return successWithData(data, res);
   } catch (error) {
     return customError(error.message, res);
   }
 };
+
+module.exports.userEmailVerify = async (req, res) => {
+  try {
+    const data = await service.userEmailVerify(req.body);
+    return successWithData(data, res);
+  } catch (error) {
+    return customError(error.message, res);
+  }
+}
+
+module.exports.userEmailVerifyWithCode = async (req, res) => {
+  try {
+    const data = await service.userEmailVerifyWithCode(req.body);
+    return successWithData(data, res);
+  } catch (error) {
+    return customError(error.message, res);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports.getUserById = async (req, res) => {
   try {
@@ -82,6 +116,15 @@ module.exports.getUsers = async (req, res) => {
     return customError(error.message, res);
   }
 };
+
+module.exports.resetPasswordUser = async (req, res) => {
+  try {
+    const data = await service.resetPasswordUser(req.body);
+    return successWithData(data, res);
+  } catch (error) {
+    return customError(error.message, res);
+  }
+}
 
 module.exports.deleteUser = async (req, res) => {
   try {
@@ -110,21 +153,7 @@ module.exports.resetPasswordAdmin = async (req, res) => {
   }
 };
 
-module.exports.resetPasswordUser = async (req, res) => {
-  try {
-    const data = await service.resetPasswordUser(req.body);
-    return successWithData(data, res);
-  } catch (error) {
-    return customError(error.message, res);
-  }
-}
 
-module.exports.userEmailVerify = async (req, res) => {
-  try {
-    const data = await service.userEmailVerify(req.body);
-    return successWithData(data, res);
-  } catch (error) {
-    return customError(error.message, res);
-  }
-}
+
+
 

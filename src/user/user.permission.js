@@ -19,6 +19,13 @@ module.exports.permissions = {
   userEmailVerify: {
     path: "/email-verify",
   },
+  userEmailVerifyWithCode :  {
+    path: "/email-verify/enter-code",
+  },
+  usersUpdate: {
+    path: "/update",
+    granted: [superAdmin],
+  },
 
 
 
@@ -48,10 +55,6 @@ module.exports.permissions = {
   },
   usersConfirmation: {
     path: "/confirm/:id",
-  },
-  usersUpdate: {
-    path: "/",
-    granted: [superAdmin],
   },
   deleteUser: {
     path: "/delete",
