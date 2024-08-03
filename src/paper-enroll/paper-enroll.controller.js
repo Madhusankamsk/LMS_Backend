@@ -42,15 +42,6 @@ module.exports.updateEnrollPaper = async (req, res) => {
   }
 }
 
-module.exports.toggleEnrollPaper = async (req, res) => {
-  try {
-      const data = await service.toggleEnrollPaper(req.params.id)
-      return successWithData(data, res)
-  } catch (error) {
-      return customError(error.message, res)
-  }
-}
-
 module.exports.deleteEnrollPaper = async (req, res) => {
   try {
       const data = await service.deleteEnrollPaper(req.params.id)

@@ -31,16 +31,9 @@ router.route(permissions.updateEnrollPaper.path).put(
     controller.updateEnrollPaper
 )
 
-router.route(permissions.toggleEnrollPaper.path).put(
-    validator.validateRouteParameters(schema.toggleEnrollPaper),
-    controller.toggleEnrollPaper
-)
-
 router.route(permissions.deleteEnrollPaper.path).delete(
     validator.validateRouteParameters(schema.deleteEnrollPaper),
     controller.deleteEnrollPaper
 )
-
-
 
 module.exports = router
