@@ -58,7 +58,6 @@ module.exports.userPasswordReset = async (req, res) => {
 
 module.exports.updateUser = async (req, res) => {
   try {
-    console.log("awfgh")
     const data = await service.updateUser(req.body);
     return successWithData(data, res);
   } catch (error) {

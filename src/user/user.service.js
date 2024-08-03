@@ -252,14 +252,12 @@ module.exports.userForgotPasswordReset = async (body) => {
         throw new Error('Reset code expired.')
     }
 
-    user.setPassword(body.password)
     await repository.save(user)
 
     return 'success'
 }
 
 module.exports.userEmailVerify = async (body) => {
-    console.log("sefghsaj")
     const email = body.email
     const user = await this.getUserByEmail(email, false)
 

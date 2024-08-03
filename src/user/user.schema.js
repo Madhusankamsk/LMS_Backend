@@ -43,7 +43,6 @@ module.exports.forgetPassword = joi.object().keys({
 })
 
 module.exports.forgetPasswordReset = joi.object().keys({
-    password: passwordValidation,
     email: joi
         .string()
         .email({ tlds: { allow: false } })
@@ -76,7 +75,6 @@ module.exports.updateUser = joi.object().keys({
     profile_picture: joi.string(),
     phone: joi.string().length(10),
     password: passwordValidation,
-    re_enter_password: passwordValidation,
     address: joi.string(),
     school: joi.string(),
     grade: joi.string(),

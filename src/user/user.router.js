@@ -7,11 +7,6 @@ const router = express.Router()
 const { permissions } = require('./user.permission')
 
 router.route(permissions.usersCreate.path).post(
-    // validator.validateHeader(),
-    // validator.validateRouteAccessByRole({
-    //     baseRoute: '/user',
-    //     action: 'add',
-    // }),
     validator.validateBody(schema.createUser),
     controller.createUser
 )
@@ -41,7 +36,7 @@ router.route(permissions.userEmailVerifyWithCode.path).post(
     controller.userEmailVerifyWithCode
 )
 
-router.route(permissions.usersUpdate.path).post(
+router.route(permissions.usersUpdate.path).put(
     validator.validateBody(schema.updateUser),
     controller.updateUser
 )
@@ -77,22 +72,6 @@ controller.resetPasswordAdmin
 
 
 
-
-
-
-
-
-
-
-router.route(permissions.usersUpdate.path).put(
-    validator.validateHeader(),
-    // validator.validateRouteAccessByRole({
-    //     baseRoute: '/user',
-    //     action: 'edit',
-    // }),
-    validator.validateBody(schema.updateUser),
-    controller.updateUser
-)
 
 router.route(permissions.blockUser.path).post(
     validator.validateHeader(),
