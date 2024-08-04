@@ -200,6 +200,10 @@ module.exports.updateUser = async (body) => {
     delete userUpdated.salt
     delete userUpdated.password
     delete userUpdated.role
+    delete userUpdated.email_verify_code
+    delete userUpdated.email_verify_code_sent_at
+    delete userUpdated.password_reset_code
+    delete userUpdated.password_reset_code_sent_at
 
     return userUpdated
 }
