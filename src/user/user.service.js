@@ -185,7 +185,14 @@ module.exports.updateUser = async (body) => {
         }
     }
 
-    let userUpdated = await repository.updateOne(
+    // Check if password needs to be updated
+    if (body.password) {
+        user.setPassword(body.password);
+        body.password = user.password; 
+        body.salt = user.salt; 
+    }
+
+    userUpdated = await repository.updateOne(
         UserModel,
         {
             _id: new mongoose.Types.ObjectId(body._id),
