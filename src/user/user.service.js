@@ -252,9 +252,18 @@ module.exports.userForgotPasswordReset = async (body) => {
         throw new Error('Reset code expired.')
     }
 
-    await repository.save(user)
+    await repository.save(user);
 
-    return 'success'
+    let userToReturn = user.toObject()
+    delete userToReturn.salt
+    delete userToReturn.password
+    delete userToReturn.role
+    delete userToReturn.email_verify_code
+    delete userToReturn.email_verify_code_sent_at
+    delete userToReturn.password_reset_code
+    delete userToReturn.password_reset_code_sent_at
+
+    return userToReturn;
 }
 
 module.exports.userEmailVerify = async (body) => {
