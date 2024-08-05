@@ -12,6 +12,11 @@ const schema = new mongoose.Schema(
             ref: "subjects",
             required: true,
         },
+        has_folder: {
+            type: Boolean,
+            required : true,
+            default: false,
+        },
         is_active: {
             type: Boolean,
             required : true,

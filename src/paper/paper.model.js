@@ -62,11 +62,6 @@ const schema = new mongoose.Schema(
         video_link: {
             type: String,
         },
-        has_folder: {
-            type: Boolean,
-            required : true,
-            default: false,
-        },
         is_active: {
             type: Boolean,
             default: true,

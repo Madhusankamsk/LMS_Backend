@@ -15,12 +15,14 @@ module.exports.getCategories = (maxLimit) => {
 module.exports.createCategory = joi.object({
     name: joi.string().required().min(1).max(30),
     subject_id:joi.string().required().max(24).min(24),
+    has_folder: joi.boolean().required(),
 })
 
 module.exports.updateCategory = joi.object({
     _id: joi.string().required().max(24).min(24),
     name: joi.string().min(1).max(30),
     subject_id:joi.string().max(24).min(24),
+    has_folder: joi.boolean(),
 })
 
 module.exports.toggleCategory = joi.object({
