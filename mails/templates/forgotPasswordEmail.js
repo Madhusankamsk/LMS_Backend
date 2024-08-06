@@ -57,7 +57,7 @@ module.exports.forgotPassword = (user) => {
         font-family: "Poppins", sans-serif;
         font-weight: 800;
         font-style: normal;
-        color: #333333;
+        color: #222222;
         font-size: 18px;
       }
       p {
