@@ -330,7 +330,10 @@ module.exports.createFolder = async (body) => {
     if (!existingCategory) {
         throw new Error('Category id not valid!');
     }
-    
+
+    if(!existingCategory.has_folder){
+        throw new Error('This Category Type does not support folders!');
+    }
     // const existingUser = await userService.getUserById(body.teacher_id);// need to check if teacher id
     // if (!existingUser) {
     //     throw new Error('User id not valid!');
