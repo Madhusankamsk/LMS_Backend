@@ -19,6 +19,144 @@ module.exports.getCommentById = async (id) => {
     return comment
 }
 
+module.exports.getComments = async (body) => {
+    const {
+        limit,
+        order,
+        page,
+        search,
+        paper_id,
+        exclude = [],
+    } = body
+    const column = body.column || -1
+
+    const sortingOrder =
+        order === sortingConfig.sortingOrder.descending || !order ? -1 : 1
+    const sortingColumn = sortingConfig.sortingColumn.update_at[column];
+
+    let matchQuery = {
+        is_deleted: {
+            $ne: true,
+        },
+    };
+    
+    let projectQuery = []
+    let recordsTotal
+    let comments
+
+    const sortQuery = {
+        [sortingColumn]: sortingOrder,
+        updated_at: -1,
+    }
+    
+    if (paper_id) {
+        matchQuery = {
+            ...matchQuery,
+            'paper_id': new mongoose.Types.ObjectId(paper_id),
+        }
+    }
+
+    const prePaginationQuery = [
+        {
+            $match: matchQuery,
+        },
+    ]
+
+    const combinedQuery = [
+        {
+            $lookup: {
+                from: 'papers',
+                let: { paperID: '$paper_id' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ['$_id', '$$paperID'] },
+                        },
+                    },
+                    {
+                        $project: {
+                            name: 1,
+                            description: 1,
+                        },
+                    },
+                ],
+                as: 'paper',
+            },
+        },
+        {
+            $addFields: {
+                paper: {
+                    $arrayElemAt: ['$paper', 0],
+                },
+            },
+        },
+    ];
+
+    recordsTotal = await repository.findByAggregateQuery(CommentModel, [
+        ...prePaginationQuery,
+        { $count: 'count' },
+    ])
+
+    recordsTotal = pathOr(0, [0, 'count'], recordsTotal)
+    const pageLimit = setLimitToPositiveValue(limit, recordsTotal)
+
+    if (exclude.length >= 1) {
+        projectQuery = [
+            {
+                $project: includeExcludeFields(exclude, 0),
+            },
+        ]
+    }
+
+    const paginationQuery = [
+        { $sort: sortQuery },
+        { $skip: page ? pageLimit * (page - 1) : 0 },
+        { $limit: +pageLimit || +recordsTotal },
+        ...projectQuery,
+    ]
+
+    if (!search) {
+        comments = await repository.findByAggregateQuery(CommentModel, [
+            ...prePaginationQuery,
+            ...paginationQuery,
+            ...combinedQuery,
+        ])
+    } else {
+        const searchQuery = [
+            ...prePaginationQuery,
+            ...combinedQuery,
+            {
+                $match: {
+                    $or: [
+                        { name: { $regex: search, $options: 'i' } },
+                        { 'paper.name': { $regex: search, $options: "i" } },
+                        { 'paper.description': { $regex: search, $options: "i" } },
+                    ],
+                },
+            },
+        ]
+
+        const data = await repository.findByAggregateQuery(CommentModel, [
+            {
+                $facet: {
+                    comments: [...searchQuery, ...paginationQuery],
+                    recordsTotal: [...searchQuery, { $count: 'count' }],
+                },
+            },
+        ])
+        comments = pathOr([], [0, 'comments'], data)
+        recordsTotal = pathOr(0, [0, 'recordsTotal', 0, 'count'], data)
+    }
+
+    const recordsFiltered = comments ? comments.length : 0
+
+    return {
+        comments,
+        recordsTotal,
+        recordsFiltered,
+    }
+}
+
 module.exports.createComment = async (body) => {
     const existingPaper = await paperService.getPaperById(body.paper_id);
     if (!existingPaper) {

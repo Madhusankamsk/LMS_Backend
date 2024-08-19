@@ -8,6 +8,7 @@ module.exports.getCommentById= joi.object({
 module.exports.getComments = (maxLimit) => {
     return joi.object().keys({
         parent_id: joi.string().alphanum().min(24).max(24),
+        paper_id: joi.string().alphanum().min(24).max(24),
         ...joiConfig.pagination(maxLimit),
     });
 };
