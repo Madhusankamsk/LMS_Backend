@@ -18,5 +18,6 @@ router.use("/papers", require("../src/paper/paper.router"));
 router.use("/categories", require("../src/categories/category.router"));
 router.use("/folders", require("../src/folder/folder.router"));
 router.use("/paper-enroll", require("../src/paper-enroll/paper-enroll.router"));
+router.use("/comments", require('../src/comments/comments.router'));
 
 module.exports = router;
