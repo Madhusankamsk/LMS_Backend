@@ -76,7 +76,6 @@ module.exports.getComments = async (body) => {
                     {
                         $project: {
                             name: 1,
-                            description: 1,
                         },
                     },
                 ],
@@ -87,6 +86,34 @@ module.exports.getComments = async (body) => {
             $addFields: {
                 paper: {
                     $arrayElemAt: ['$paper', 0],
+                },
+            },
+        },
+        {
+            $lookup: {
+                from: 'users',
+                let: { userID: '$user_id' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ['$_id', '$$userID'] },
+                        },
+                    },
+                    {
+                        $project: {
+                            profile_picture: 1,
+                            first_name: 1,
+                            last_name: 1,
+                        },
+                    },
+                ],
+                as: 'user',
+            },
+        },
+        {
+            $addFields: {
+                user: {
+                    $arrayElemAt: ['$user', 0],
                 },
             },
         },
