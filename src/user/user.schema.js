@@ -13,10 +13,7 @@ const passwordValidation = joi
     .required()
 
 module.exports.createUser = joi.object().keys({
-    email: joi
-        .string()
-        .email({ tlds: { allow: false } })
-        .required(),
+    _id: joi.string().required().max(24).min(24),
     first_name: joi.string().required(),
     last_name: joi.string().required(),
     profile_picture: joi.string(),
@@ -58,10 +55,7 @@ module.exports.userEmailVerify = joi.object().keys({
 })
 
 module.exports.emailVerifyWithCode = joi.object().keys({
-    email: joi
-        .string()
-        .email({ tlds: { allow: false } })
-        .required(),
+    _id: joi.string().required().max(24).min(24),
     email_verify_code: joi.string().required(),
 })
 

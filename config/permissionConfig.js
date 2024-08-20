@@ -1,6 +1,7 @@
 const userStatus = {
     confirmed: "confirmed",
     notConfirmed: "not-confirmed",
+    registed: "registed",
 };
 
 const userRoles = {

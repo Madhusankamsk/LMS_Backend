@@ -13,11 +13,11 @@ const schema = new mongoose.Schema(
         },
         first_name: {
             type: String,
-            required: true,
+            //required: true,
         },
         last_name: {
             type: String,
-            required: true,
+            //required: true,
         },
         profile_picture: {
             type: String,
@@ -26,16 +26,16 @@ const schema = new mongoose.Schema(
             type: String,
             trim: true,
             unique: true,
-            required: true,
+            //required: true,
         },
         password: {
             type: String,
             trim: true,
-            required: true,
+            //required: true,
         },
         salt: {
             type: String,
-            required: true,
+            //required: true,
         },
         address: {
             type: String,

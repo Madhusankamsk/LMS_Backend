@@ -96,37 +96,124 @@ module.exports.getUserByPhoneNumber = async (phone, filterActive = true) => {
     return repository.findOne(UserModel, filter)
 }
 
-module.exports.createUser = async (body) => {
-    const existingUser = await this.getUserByEmail(body.email, false)
-    if (existingUser) {
-        throw new Error('Email already exists.')
+module.exports.userEmailVerify = async (body) => {
+    const email = body.email
+    const user = await this.getUserByEmail(email, false)
+    const emailResetCode = generateFourByteCode();
+
+    if (user) {
+        //throw new Error('Email is Already Registed')
+        if(user.status === userStatus.registed){
+            throw new Error('Email is Already Registed')
+        }
+
+        const userUpdate = await this.updateUser({
+            _id: user._id,
+            email_verify_code: emailResetCode,
+            email_verify_code_sent_at: new Date(),
+        })
+
+        await verifyMail({
+            to: user.email,
+            email_verify_code: emailResetCode,
+            subject: 'Your Email Verify Code',
+        })
+        return userUpdate;
+
+    } else {
+        let newUser = new UserModel(body)
+        await repository.save(newUser)
+
+        const userUpdate = await this.updateUser({
+            _id: newUser._id,
+            email_verify_code: emailResetCode,
+            email_verify_code_sent_at: new Date(),
+        })
+
+        await verifyMail({
+            to: user.email,
+            email_verify_code: emailResetCode,
+            subject: 'Your Email Verify Code',
+        })
+
+        return userUpdate;
+
+    }
+}
+
+module.exports.userEmailVerifyWithCode = async (body) => {
+    const user = await this.getUserById(body._id, false)
+
+    if (!user) {
+        throw new Error('user not found')
+    } else if (user.status === userStatus.registed) {
+        throw new Error('Email is Already Registed')
     }
 
-    const existingPhone = await this.getUserByPhoneNumber(body.phone, false)
-    if (existingPhone) {
-        throw new Error('Phone number already exists.')
+    if (body.email_verify_code !== user.email_verify_code) {
+        throw new Error('Invalid reset code.')
     }
 
-    let newUser = new UserModel(body)
-    newUser.setPassword(body.password)
-    await repository.save(newUser)
+    if (
+        new Date(user.email_verify_code_sent_at) <
+        moment()
+            .subtract(userConfig.passwordResetCodeExpireDuration, 'minutes')
+            .toDate()
+    ) {
+        throw new Error('Reset code expired.')
+    }
 
-    newUser = newUser.toObject()
-
-    const fullName = newUser.first_name + " " + newUser.last_name;
-
-    await createUserMail({
-        name: fullName,
-        to: newUser.email,
-        new_password: newUser.password,
-        subject: 'Congratulations! Your account has been created',
+    const userUpdate = await this.updateUser({
+        _id: user._id,
+        status: userStatus.confirmed
     })
 
-    delete newUser.password
-    delete newUser.salt
-    delete newUser.role
+    return userUpdate
+}
 
-    return newUser
+module.exports.createUser = async (body) => {
+    const existingUser = await this.getUserById(body._id, false)
+
+    if (!existingUser) {
+        throw new Error('User Not Found')
+    } 
+    else {
+        if (existingUser.status === userStatus.notConfirmed) {
+            throw new Error('Email is Not Verify')
+        } 
+
+        if (existingUser.status === userStatus.registed) {
+            throw new Error('Email is Already Registed')
+        }
+        else if (existingUser.status === userStatus.confirmed) {
+            const existingPhone = await this.getUserByPhoneNumber(body.phone, false)
+            if (existingPhone && existingPhone._id.toString() !== existingUser._id.toString()) {
+                console.log(existingPhone._id )
+                console.log(existingUser._id)
+                throw new Error('Phone number already exists.')
+            }
+
+            let userUpdate = await this.updateUser({
+                _id: body._id,
+                first_name: body.first_name,
+                last_name: body.last_name,
+                phone: body.phone,
+                password: body.password,
+                status: userStatus.registed
+            })
+        
+            const fullName = userUpdate.first_name + " " + userUpdate.last_name;
+        
+            await createUserMail({
+                name: fullName,
+                to: userUpdate.email,
+                new_password: body.password,
+                subject: 'Congratulations! Your account has been created',
+            })
+        
+            return userUpdate
+        }
+    } 
 }
 
 module.exports.loginUser = async (body) => {
@@ -188,8 +275,8 @@ module.exports.updateUser = async (body) => {
     // Check if password needs to be updated
     if (body.password) {
         user.setPassword(body.password);
-        body.password = user.password; 
-        body.salt = user.salt; 
+        body.password = user.password;
+        body.salt = user.salt;
     }
 
     userUpdated = await repository.updateOne(
@@ -277,61 +364,7 @@ module.exports.userForgotPasswordReset = async (body) => {
     return userToReturn;
 }
 
-module.exports.userEmailVerify = async (body) => {
-    const email = body.email
-    const user = await this.getUserByEmail(email, false)
 
-    if (!user) {
-        throw new Error('invalid email')
-    }
-
-    const emailResetCode = generateFourByteCode();
-
-    await this.updateUser({
-        _id: user._id,
-        email_verify_code: emailResetCode,
-        email_verify_code_sent_at: new Date(),
-    })
-
-    const fullName = user.first_name + " " + user.last_name;
-
-    await verifyMail({
-        name: fullName,
-        to: user.email,
-        email_verify_code: emailResetCode,
-        subject: 'Your Email Verify Code',
-    })
-
-    return 'success'
-}
-
-module.exports.userEmailVerifyWithCode = async (body) => {
-    const user = await this.getUserByEmail(body.email, false)
-
-    if (!user) {
-        throw new Error('user not found')
-    }
-
-    if (body.email_verify_code !== user.email_verify_code) {
-        throw new Error('Invalid reset code.')
-    }
-
-    if (
-        new Date(user.email_verify_code_sent_at) <
-        moment()
-            .subtract(userConfig.passwordResetCodeExpireDuration, 'minutes')
-            .toDate()
-    ) {
-        throw new Error('Reset code expired.')
-    }
-
-    await this.updateUser({
-        _id: user._id,
-        status: userStatus.confirmed
-    })
-
-    return 'success'
-}
 
 
 

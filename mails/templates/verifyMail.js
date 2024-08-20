@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 module.exports.verifyMail = (newUser) => {
-  const { name, email_verify_code, subject } = newUser;
+  const { email_verify_code, subject } = newUser;
 
   const emailTemplate = `
   <!DOCTYPE html>
@@ -82,7 +82,7 @@ module.exports.verifyMail = (newUser) => {
     <div class="container">
       <img src="cid:logo" alt="Your App Logo" class="logo" />
       <div class="content">
-        <p><b>Hello ${name},</b></p>
+        <p><b>Hello Student,</b></p>
         <p>
           To verify your email address, please use the following code:
         </p>
