@@ -6,6 +6,17 @@ const validator = require('../../validators/validator')
 const router = express.Router()
 const { permissions } = require('./user.permission')
 
+router.route(permissions.usersGetById.path).get(
+    validator.validateHeader(), 
+    controller.getUserById
+)
+
+router.route(permissions.usersGetAll.path).get(
+        validator.validateHeader(),
+        validator.validateQueryParameters(schema.getAllUsers),
+        controller.getUsers
+)
+
 router.route(permissions.usersCreate.path).post(
     validator.validateBody(schema.createUser),
     controller.createUser
@@ -101,17 +112,6 @@ router.route(permissions.deleteUser.path).post(
     // }),
     validator.validateBody(schema.deleteUser),
     controller.deleteUser
-)
-
-router.route(permissions.usersGetById.path).get(
-    validator.validateHeader(), 
-    controller.getUserById
-)
-
-router.route(permissions.usersGetAll.path).get(
-        validator.validateHeader(),
-        validator.validateQueryParameters(schema.getAllUsers),
-        controller.getUsers
 )
 
 router.route(permissions.userPasswordResetUser.path).post(

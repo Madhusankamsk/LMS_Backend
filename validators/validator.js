@@ -78,6 +78,7 @@ module.exports.validateBody = (schema) => (req, res, next) => {
  */
 module.exports.validateHeader = (grantedArray) => (req, res, next) => jwt.verify(
     getTokenFromHeader(req), secret, async (err, decoded) => {
+        console.log("asdfbjksahdjksa");
         if (err) {
             return response.customError('Invalid Token', res)
         }
@@ -86,6 +87,8 @@ module.exports.validateHeader = (grantedArray) => (req, res, next) => jwt.verify
                 await permission.validity(decoded.role, grantedArray)
             }
             res.locals.user = decoded
+            req.params = decoded.id;
+            console.log("poiutrew"+ JSON.stringify(res.locals.user));
             next()
         } catch (error) {
             return response.customError(error.message, res)

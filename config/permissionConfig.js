@@ -10,4 +10,10 @@ const userRoles = {
     techer: "teacher###",
 };
 
-module.exports = { userStatus , userRoles };
+const studentAnswers = {
+    toDo: "to-do",
+    draft: "dreaft",
+    submited: "submited",
+};
+
+module.exports = { userStatus , userRoles , studentAnswers};

@@ -2,6 +2,9 @@
 const { superAdmin } = require("../../config/permissionConfig").userRoles;
 
 module.exports.permissions = {
+  usersGetById: {
+    path: "/id",
+  },
   usersCreate: {
     path: "/create",
     granted: [superAdmin],
@@ -36,9 +39,6 @@ module.exports.permissions = {
   usersGetAll: {
     path: "/",
     granted: [superAdmin],
-  },
-  usersGetById: {
-    path: "/:id",
   },
   usersSave: {
     path: "/",

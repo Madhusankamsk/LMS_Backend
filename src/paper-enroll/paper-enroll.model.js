@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const Config = require('../../config/config')
+const { studentAnswers } = require("../../config/permissionConfig");
+
 
 const schema = new mongoose.Schema(
     {
@@ -24,6 +26,11 @@ const schema = new mongoose.Schema(
         },
         feedback: {
             type: String,
+        },
+        status: {
+            type: String,
+            default: studentAnswers.toDo,
+            trim: true,
         },
         is_active: {
             type: Boolean,
