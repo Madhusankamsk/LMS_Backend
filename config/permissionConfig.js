@@ -7,7 +7,8 @@ const userStatus = {
 const userRoles = {
     admin: "admin",
     superAdmin: "superAdmin",
-    techer: "teacher###",
+    techer: "$$$Tea%%%Cher###",
+    student: "Student",
 };
 
 const studentAnswers = {

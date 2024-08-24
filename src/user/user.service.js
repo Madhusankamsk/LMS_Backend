@@ -10,7 +10,7 @@ const nodemailer = require('nodemailer')
 const { validatePassword } = require('../../services/password')
 const moment = require('moment')
 const userConfig = require('../../config/userConfig')
-const { userStatus } = require("../../config/permissionConfig");
+const { userStatus , userRoles} = require("../../config/permissionConfig");
 
 const {
     createUserMail,
@@ -24,11 +24,23 @@ const {
     generateFourByteCode,
 } = require("../../services/generateCode");
 
-module.exports.getUserById = async (id) => {
-    const user = await repository.findOne(UserModel, {
+module.exports.getUserById = async (id , isFrontendRequest = false) => {
+    let user = await repository.findOne(UserModel, {
         _id: new mongoose.Types.ObjectId(id),
         is_deleted: false,
     })
+    if (isFrontendRequest){
+        user = user.toObject()
+        delete user.salt
+        delete user.password
+        delete user.email_verify_code
+        delete user.email_verify_code_sent_at
+        delete user.password_reset_code
+        delete user.password_reset_code_sent_at
+        if(user.role === userRoles.techer){
+            user.role = "Teacher";
+        }
+    }
     return user
 }
 
@@ -106,13 +118,11 @@ module.exports.userEmailVerify = async (body) => {
         if(user.status === userStatus.registed){
             throw new Error('Email is Already Registed')
         }
-
         const userUpdate = await this.updateUser({
             _id: user._id,
             email_verify_code: emailResetCode,
             email_verify_code_sent_at: new Date(),
         })
-
         await verifyMail({
             to: user.email,
             email_verify_code: emailResetCode,
@@ -131,7 +141,7 @@ module.exports.userEmailVerify = async (body) => {
         })
 
         await verifyMail({
-            to: user.email,
+            to: userUpdate.email,
             email_verify_code: emailResetCode,
             subject: 'Your Email Verify Code',
         })
@@ -293,11 +303,13 @@ module.exports.updateUser = async (body) => {
     userUpdated = userUpdated.toObject()
     delete userUpdated.salt
     delete userUpdated.password
-    delete userUpdated.role
     delete userUpdated.email_verify_code
     delete userUpdated.email_verify_code_sent_at
     delete userUpdated.password_reset_code
     delete userUpdated.password_reset_code_sent_at
+    if(user.role === userRoles.techer){
+        userUpdated.role = "Teacher"
+    }
 
     return userUpdated
 }

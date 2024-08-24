@@ -32,6 +32,7 @@ router.route(permissions.updateEnrollPaper.path).put(
 )
 
 router.route(permissions.deleteEnrollPaper.path).delete(
+    validator.validateHeader(), 
     validator.validateRouteParameters(schema.deleteEnrollPaper),
     controller.deleteEnrollPaper
 )

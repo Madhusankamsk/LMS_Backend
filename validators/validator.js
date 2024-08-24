@@ -11,7 +11,7 @@ const { secret } = require('../config')
 // import response class
 const response = require('../services/responseService')
 // import permission class
-//const permission = require('../services/accessMapper')
+const permission = require('../services/accessMapper')
 const userService = require('../src/user/user.service')
 const config = require('../config/config')
 // import formidable
@@ -76,7 +76,7 @@ module.exports.validateBody = (schema) => (req, res, next) => {
  * @returns validation Status
  * @param grantedArray
  */
-module.exports.validateHeader = (grantedArray) => (req, res, next) => jwt.verify(
+module.exports.validateHeader = (grantedArray, isReturnUserId) => (req, res, next) => jwt.verify(
     getTokenFromHeader(req), secret, async (err, decoded) => {
         console.log("asdfbjksahdjksa");
         if (err) {
@@ -87,15 +87,14 @@ module.exports.validateHeader = (grantedArray) => (req, res, next) => jwt.verify
                 await permission.validity(decoded.role, grantedArray)
             }
             res.locals.user = decoded
-            req.params = decoded.id;
-            console.log("poiutrew"+ JSON.stringify(res.locals.user));
+            req.userId = decoded.id;
+            console.log("poiutrew" + JSON.stringify(res.locals.user));
             next()
         } catch (error) {
             return response.customError(error.message, res)
         }
     }
 )
-
 
 /**
  * validate form data
@@ -298,5 +297,5 @@ module.exports.validateRouteAccessByRoleMultiple = (allowedRoutes) => async (req
             res
         )
     }
-    
+
 }
