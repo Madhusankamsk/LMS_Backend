@@ -44,6 +44,9 @@ const schema = new mongoose.Schema(
         school: {
             type: String,
         },
+        shy: {
+            type: String,
+        },
         grade: {
             type: String,
         },

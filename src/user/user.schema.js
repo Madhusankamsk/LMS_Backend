@@ -20,6 +20,7 @@ module.exports.createUser = joi.object().keys({
     phone: joi.string().length(10).required(),
     password: passwordValidation,
     address: joi.string(),
+    shy: joi.string(),
     school: joi.string(),
     grade: joi.string(),
 })
@@ -70,6 +71,7 @@ module.exports.updateUser = joi.object().keys({
     phone: joi.string().length(10),
     password: passwordValidation,
     address: joi.string(),
+    shy: joi.string(),
     school: joi.string(),
     grade: joi.string(),
 })
