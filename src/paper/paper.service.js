@@ -613,7 +613,13 @@ module.exports.getPapers = async (body) => {
   const recordsFiltered = papers ? papers.length : 0;
 
   // Iterate over each paper and call getPaperById
-  if (user_id) {
+  if (!user_id) {
+    return {
+      papers,
+      recordsTotal,
+      recordsFiltered,
+    };
+  } else {
     const processedPapers = await Promise.all(
       papers.map(async (paper) => {
         const fullPaperData =
@@ -622,24 +628,16 @@ module.exports.getPapers = async (body) => {
             user_id
           );
 
-        // Determine is_purchase based on the existence of data in fullPaperData
-        const isPurchase = !!fullPaperData; // Use double negation for a boolean check
+        const isPurchase = !!fullPaperData;
 
-        return { ...paper, isPurchase }; // Add isPurchase property to each paper object
+        return { ...paper, isPurchase };
       })
     );
 
     return {
       papers: processedPapers,
       recordsTotal,
-      recordsFiltered: papers ? papers.length : 0,
-    };
-  } else {
-    // Handle case where user_id is not provided (optional)
-    return {
-      papers,
-      recordsTotal,
-      recordsFiltered: papers ? papers.length : 0,
+      recordsFiltered,
     };
   }
 };
