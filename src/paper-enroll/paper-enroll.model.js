@@ -54,5 +54,5 @@ const schema = new mongoose.Schema(
 
 schema.index({ title: 1 }) // Indexing
 
-const model = mongoose.model('paper-enroll', schema)
+const model = mongoose.model('paper-enrolls', schema)
 module.exports = model

@@ -25,6 +25,14 @@ module.exports.getEnrollPaperById = async (id) => {
     return enrollPaper
 }
 
+module.exports.getEnrollPaperByStudentIdWithPaperID = async (paperId, userId) => {
+    const enrollPaper = await repository.findOne(PaperEnrollModel, {
+        paper_id: new mongoose.Types.ObjectId(paperId),
+        user_id: new mongoose.Types.ObjectId(userId),
+    })
+    return enrollPaper
+}
+
 module.exports.getEnrollPapers = async (body) => {
     const {
         limit,

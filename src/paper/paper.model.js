@@ -34,13 +34,15 @@ const schema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        is_free: {
-            type: Boolean,
-            default: false,
-            required: true,
-        },
+        // is_free: {
+        //     type: Boolean,
+        //     default: false,
+        //     required: true,
+        // },
         price: {
-            type: String,
+            type: Number,
+            required: true,
+            default: 0,
         },
         rate_value: {
             type: Number,
