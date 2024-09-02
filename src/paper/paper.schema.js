@@ -7,7 +7,7 @@ module.exports.getPaperById = joi.object({
 
 module.exports.getPapers = (maxLimit) => {
     return joi.object().keys({
-        paper_id: joi.string().alphanum().min(24).max(24),
+        parent_id: joi.string().alphanum().min(24).max(24),
         user_id: joi.string().alphanum().min(24).max(24),
         ...joiConfig.pagination(maxLimit),
     });

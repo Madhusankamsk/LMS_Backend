@@ -163,232 +163,6 @@ module.exports.getPaperById = async (id) => {
   return paper;
 };
 
-// module.exports.getPapers = async (body) => {
-//     const existingCategory = await categoryService.getCategoryById(parent_id);
-//     if (existingCategory) {
-//         throw new Error('Invalid subject _id');
-//     }
-//     else {
-//         const existingFolder = await folderService.getFolderById(parent_id);
-//         if (!existingFolder) throw new Error('Invalid parent _id');
-//     }
-//     if (!existingCategory) throw new Error('Invalid subject _id');
-//     const {
-//         limit,
-//         order,
-//         page,
-//         search,
-//         folder_id: parent_id,
-//         exclude = [],
-//     } = body
-//     const column = body.column || -1
-
-//     const sortingOrder =
-//         order === sortingConfig.sortingOrder.descending || !order ? -1 : 1
-//     const sortingColumn = sortingConfig.sortingColumn.update_at[column];
-
-//     let matchQuery = {
-//         is_deleted: {
-//             $ne: true,
-//         },
-//     };
-
-//     let projectQuery = []
-//     let recordsTotal
-//     let papers
-
-//     const sortQuery = {
-//         [sortingColumn]: sortingOrder,
-//         updated_at: -1,
-//     }
-
-//     if (subject_id) {
-//         matchQuery = {
-//             ...matchQuery,
-//             'folder_id': new mongoose.Types.ObjectId(parent_id),
-//         }
-//     }
-
-//     const prePaginationQuery = [
-//         {
-//             $match: matchQuery,
-//         },
-//     ]
-
-//     const combinedQuery = [
-//         {
-//             $lookup: {
-//                 from: 'users',
-//                 let: { teacherID: '$teacher_id' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: { $eq: ['$_id', '$$teacherID'] },
-//                         },
-//                     },
-//                     {
-//                         $project: {
-//                             first_name: 1,
-//                             last_name: 1,
-//                             email: 1,
-//                         },
-//                     },
-//                 ],
-//                 as: 'teacher',
-//             },
-//         },
-//         {
-//             $addFields: {
-//                 teacher: {
-//                     $arrayElemAt: ['$teacher', 0],
-//                 },
-//             },
-//         },
-//         {
-//             $lookup: {
-//                 from: 'subjects',
-//                 let: { subjectID: '$subject_id' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: { $eq: ['$_id', '$$subjectID'] },
-//                         },
-//                     },
-//                     {
-//                         $project: {
-//                             name: 1,
-//                             code: 1,
-//                         },
-//                     },
-//                 ],
-//                 as: 'subject',
-//             },
-//         },
-//         {
-//             $addFields: {
-//                 subject: {
-//                     $arrayElemAt: ['$subject', 0],
-//                 },
-//             },
-//         },
-//         {
-//             $lookup: {
-//                 from: 'categories',
-//                 let: { categoryID: '$category_id' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: { $eq: ['$_id', '$$categoryID'] },
-//                         },
-//                     },
-//                     {
-//                         $project: {
-//                             name: 1,
-//                         },
-//                     },
-//                 ],
-//                 as: 'category',
-//             },
-//         },
-//         {
-//             $lookup: {
-//                 from: 'folders',
-//                 let: { categoryID: '$folder_id' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: { $eq: ['$_id', '$$folderID'] },
-//                         },
-//                     },
-//                     {
-//                         $project: {
-//                             name: 1,
-//                         },
-//                     },
-//                 ],
-//                 as: 'folder',
-//             },
-//         },
-//         {
-//             $addFields: {
-//                 category: {
-//                     $arrayElemAt: ['$folder', 0],
-//                 },
-//             },
-//         },
-//     ];
-
-//     recordsTotal = await repository.findByAggregateQuery(PaperModel, [
-//         ...prePaginationQuery,
-//         { $count: 'count' },
-//     ])
-
-//     recordsTotal = pathOr(0, [0, 'count'], recordsTotal)
-//     const pageLimit = setLimitToPositiveValue(limit, recordsTotal)
-
-//     if (exclude.length >= 1) {
-//         projectQuery = [
-//             {
-//                 $project: includeExcludeFields(exclude, 0),
-//             },
-//         ]
-//     }
-
-//     const paginationQuery = [
-//         { $sort: sortQuery },
-//         { $skip: page ? pageLimit * (page - 1) : 0 },
-//         { $limit: +pageLimit || +recordsTotal },
-//         ...projectQuery,
-//     ]
-
-//     if (!search) {
-//         papers = await repository.findByAggregateQuery(PaperModel, [
-//             ...prePaginationQuery,
-//             ...paginationQuery,
-//             ...combinedQuery,
-//         ])
-//     } else {
-//         const searchQuery = [
-//             ...prePaginationQuery,
-//             ...combinedQuery,
-//             {
-//                 $match: {
-//                     $or: [
-//                         { title: { $regex: search, $options: 'i' } },
-//                         { publish_date: { $regex: search, $options: 'i' } },
-//                         { price: { $regex: search, $options: 'i' } },
-//                         { 'teacher.first_name': { $regex: search, $options: "i" } },
-//                         { 'teacher.last_name': { $regex: search, $options: "i" } },
-//                         { 'subject.name': { $regex: search, $options: "i" } },
-//                         { 'subject.code': { $regex: search, $options: "i" } },
-//                         { 'category.name': { $regex: search, $options: "i" } },
-//                         { 'folder.name': { $regex: search, $options: "i" } },
-//                         { 'category.name': { $regex: search, $options: "i" } },
-//                     ],
-//                 },
-//             },
-//         ]
-
-//         const data = await repository.findByAggregateQuery(PaperModel, [
-//             {
-//                 $facet: {
-//                     papers: [...searchQuery, ...paginationQuery],
-//                     recordsTotal: [...searchQuery, { $count: 'count' }],
-//                 },
-//             },
-//         ])
-//         papers = pathOr([], [0, 'papers'], data)
-//         recordsTotal = pathOr(0, [0, 'recordsTotal', 0, 'count'], data)
-//     }
-
-//     const recordsFiltered = papers ? papers.length : 0
-
-//     return {
-//         papers,
-//         recordsTotal,
-//         recordsFiltered,
-//     }
-// }
 module.exports.getPapers = async (body) => {
   const {
     limit,
@@ -448,7 +222,6 @@ module.exports.getPapers = async (body) => {
       $match: matchQuery,
     },
   ];
-  console.log("1");
 
   const combinedQuery = [
     {
@@ -463,9 +236,8 @@ module.exports.getPapers = async (body) => {
           },
           {
             $project: {
-              first_name: 1,
-              last_name: 1,
               email: 1,
+              full_name: { $concat: ["$first_name", " ", "$last_name"] }
             },
           },
         ],
@@ -547,7 +319,6 @@ module.exports.getPapers = async (body) => {
       },
     },
   ];
-  console.log("2");
 
   recordsTotal = await repository.findByAggregateQuery(PaperModel, [
     ...prePaginationQuery,
