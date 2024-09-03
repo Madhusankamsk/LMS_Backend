@@ -60,6 +60,11 @@ const schema = new mongoose.Schema(
             default: userStatus.notConfirmed,
             trim: true,
         },
+        price: {
+            type: String,
+            required: true,
+            default: 0,
+        },
         is_active: {
             type: Boolean,
             required: true,

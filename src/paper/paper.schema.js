@@ -21,14 +21,13 @@ module.exports.createPaper = joi.object({
     folder_id: joi.string().max(24).min(24),
     duration: joi.string().required().min(1),
     publish_date: joi.date().required(),
-    is_free: joi.boolean().required(),
-    price: joi.string(),
     rate_value: joi.number(),
     paper_link: joi.string().required().min(1),
     display_image_link: joi.string().required().min(1),
     answer_link: joi.string().required().min(1),
     video_link: joi.string().required().min(1),
     description: joi.string().required().min(1),
+    price: joi.number().required().min(0),
 })
 
 module.exports.updatePaper = joi.object({
@@ -40,14 +39,13 @@ module.exports.updatePaper = joi.object({
     teacher_id: joi.string().max(24).min(24),
     duration: joi.string().min(1),
     publish_date: joi.date(),
-    is_free: joi.boolean(),
-    price: joi.string(),
     rate_value: joi.number(),
     paper_link: joi.string().min(1),
     display_image_link: joi.string().min(1),
     answer_link: joi.string().min(1),
     video_link: joi.string().min(1),
     description: joi.string().min(1),
+    price: joi.number().min(0),
 })
 
 module.exports.togglePaper = joi.object({

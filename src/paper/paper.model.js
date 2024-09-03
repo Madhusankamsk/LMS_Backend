@@ -34,11 +34,6 @@ const schema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        // is_free: {
-        //     type: Boolean,
-        //     default: false,
-        //     required: true,
-        // },
         price: {
             type: Number,
             required: true,
