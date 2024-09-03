@@ -212,6 +212,29 @@ module.exports.createEnrollPaper = async (body) => {
         throw new Error('User id not valid!');
     }
 
+    const existinePaperEnroll = await this.getEnrollPaperByStudentIdWithPaperID(body.paper_id, body.user_id);
+    if (existinePaperEnroll) {
+        throw new Error('User already enroll to this paper!');
+    }
+
+    if(existingUser.price < existingPaper.price){
+        throw new Error('User amount is not enough to buy this paper!');
+    }
+
+    const existingTeacher = await userService.getUserById(existingPaper.teacher_id);
+    const newUserPrice = existingUser.price - existingPaper.price;
+    const newTeacherPrice = existingTeacher.price + existingPaper.price;
+
+    await userService.updateUser({
+        _id: body.user_id,
+        price: newUserPrice,
+    })
+
+    await userService.updateUser({
+        _id: existingTeacher._id,
+        price: newTeacherPrice,
+    })
+
     const newEnrollPaperToSave = new PaperEnrollModel(body);
     const saveResult = await repository.save(newEnrollPaperToSave);
     return saveResult;

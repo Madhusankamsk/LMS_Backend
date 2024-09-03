@@ -163,6 +163,125 @@ module.exports.getPaperById = async (id) => {
   return paper;
 };
 
+module.exports.getPaperByIdToFrontEnd = async (id) => {
+  const existingPaper = await this.getPaperById(id);
+  if (!existingPaper) throw new Error("Invalid paper id");
+  
+  const matchQuery = {
+    is_deleted: {
+      $ne: true,
+    },
+  };
+
+  let paper;
+
+  const combinedQuery = [
+    {
+      $match: matchQuery, 
+    },
+    {
+      $lookup: {
+        from: "users",
+        let: { teacherID: "$teacher_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$$teacherID"] },
+            },
+          },
+          {
+            $project: {
+              email: 1,
+              full_name: { $concat: ["$first_name", " ", "$last_name"] }
+            },
+          },
+        ],
+        as: "teacher",
+      },
+    },
+    {
+      $lookup: {
+        from: "subjects",
+        let: { subjectID: "$subject_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$$subjectID"] },
+            },
+          },
+          {
+            $project: {
+              name: 1,
+              code: 1,
+            },
+          },
+        ],
+        as: "subject",
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        let: { categoryID: "$category_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$$categoryID"] },
+            },
+          },
+          {
+            $project: {
+              name: 1,
+            },
+          },
+        ],
+        as: "category",
+      },
+    },
+    {
+      $lookup: {
+        from: "folders",
+        let: { folderID: "$folder_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$$folderID"] },
+            },
+          },
+          {
+            $project: {
+              name: 1,
+            },
+          },
+        ],
+        as: "folder",
+      },
+    },
+    {
+      $addFields: {
+        subject: {
+          $arrayElemAt: ["$subject", 0],
+        },
+        category: {
+          $arrayElemAt: ["$category", 0],
+        },
+        folder: {
+          $arrayElemAt: ["$folder", 0],
+        },
+        teacher: {
+          $arrayElemAt: ["$teacher", 0],
+        },
+      },
+    },
+  ];
+
+  const data = await repository.findByAggregateQuery(PaperModel, combinedQuery);
+
+  paper = data[0]?.paper || [];
+
+  return paper;
+};
+
 module.exports.getPapers = async (body) => {
   const {
     limit,
@@ -413,260 +532,7 @@ module.exports.getPapers = async (body) => {
   }
 };
 
-// module.exports.getPapers = async (body) => {
-//     const {
-//         limit,
-//         order,
-//         page,
-//         search,
-//         parent_id,
-//         exclude = [],
-//     } = body;
-//     const column = body.column || -1;
-
-//     const sortingOrder = order === sortingConfig.sortingOrder.descending || !order ? -1 : 1;
-//     const sortingColumn = sortingConfig.sortingColumn.update_at[column];
-
-//     let matchQuery = {
-//         is_deleted: {
-//             $ne: true,
-//         },
-//     };
-
-//     let projectQuery = [];
-//     let recordsTotal;
-//     let papers;
-
-//     const sortQuery = {
-//         [sortingColumn]: sortingOrder,
-//         updated_at: -1,
-//     };
-
-//     if (parent_id) {
-//         const existingCategory = await categoryService.getCategoryById(parent_id);
-
-//         if (existingCategory) {
-//             matchQuery = {
-//                 ...matchQuery,
-//                 'category_id': new mongoose.Types.ObjectId(parent_id),
-//             };
-//         } else {
-//             const existingFolder = await folderService.getFolderById(parent_id);
-
-//             if (!existingFolder) {
-//                 throw new Error('Invalid parent _id');
-//             }
-
-//             matchQuery = {
-//                 ...matchQuery,
-//                 'folder_id': new mongoose.Types.ObjectId(parent_id),
-//             };
-//         }
-//     }
-
-//     const prePaginationQuery = [
-//         {
-//             $match: matchQuery,
-//         },
-//     ];
-
-//     const combinedQuery = [
-//         {
-//             $lookup: {
-//                 from: 'users',
-//                 let: { teacherID: '$teacher_id' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: { $eq: ['$_id', '$$teacherID'] },
-//                         },
-//                     },
-//                     {
-//                         $project: {
-//                             first_name: 1,
-//                             last_name: 1,
-//                             email: 1,
-//                         },
-//                     },
-//                 ],
-//                 as: 'teacher',
-//             },
-//         },
-//         {
-//             $addFields: {
-//                 teacher: {
-//                     $arrayElemAt: ['$teacher', 0],
-//                 },
-//             },
-//         },
-//         {
-//             $lookup: {
-//                 from: 'subjects',
-//                 let: { subjectID: '$subject_id' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: { $eq: ['$_id', '$$subjectID'] },
-//                         },
-//                     },
-//                     {
-//                         $project: {
-//                             name: 1,
-//                             code: 1,
-//                         },
-//                     },
-//                 ],
-//                 as: 'subject',
-//             },
-//         },
-//         {
-//             $lookup: {
-//                 from: 'categories',
-//                 let: { categoryID: '$category_id' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: { $eq: ['$_id', '$$categoryID'] },
-//                         },
-//                     },
-//                     {
-//                         $project: {
-//                             name: 1,
-//                         },
-//                     },
-//                 ],
-//                 as: 'category',
-//             },
-//         },
-//         {
-//             $lookup: {
-//                 from: 'folders',
-//                 let: { folderID: '$folder_id' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: { $eq: ['$_id', '$$folderID'] },
-//                         },
-//                     },
-//                     {
-//                         $project: {
-//                             name: 1,
-//                         },
-//                     },
-//                 ],
-//                 as: 'folder',
-//             },
-//         },
-//         {
-//             $lookup: {
-//                 from: 'Paper-enroll',
-//                 let: { paperID: '$_id' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: { $eq: ['$paper_id', '$$paperID'] },
-//                         },
-//                     },
-//                     {
-//                         $project: {
-//                             user_id: 1,
-//                         },
-//                     },
-//                 ],
-//                 as: 'paper-enrolls',
-//             },
-//         },
-//         {
-//             $addFields: {
-//                 subject: {
-//                     $arrayElemAt: ['$subject', 0],
-//                 },
-//                 category: {
-//                     $arrayElemAt: ['$category', 0],
-//                 },
-//                 folder: {
-//                     $arrayElemAt: ['$folder', 0],
-//                 },
-//                 paperEnroll: {
-//                     $arrayElemAt: ['$paper-enrolls', 0],
-//                 },
-//             },
-//         },
-//     ];
-
-//     recordsTotal = await repository.findByAggregateQuery(PaperModel, [
-//         ...prePaginationQuery,
-//         { $count: 'count' },
-//     ]);
-
-//     recordsTotal = recordsTotal[0]?.count || 0;
-//     const pageLimit = setLimitToPositiveValue(limit, recordsTotal);
-
-//     if (exclude.length >= 1) {
-//         projectQuery = [
-//             {
-//                 $project: includeExcludeFields(exclude, 0),
-//             },
-//         ];
-//     }
-
-//     const paginationQuery = [
-//         { $sort: sortQuery },
-//         { $skip: page ? pageLimit * (page - 1) : 0 },
-//         { $limit: +pageLimit || +recordsTotal },
-//         ...projectQuery,
-//     ];
-
-//     if (!search) {
-//         papers = await repository.findByAggregateQuery(PaperModel, [
-//             ...prePaginationQuery,
-//             ...paginationQuery,
-//             ...combinedQuery,
-//         ]);
-//     } else {
-//         const searchQuery = [
-//             ...prePaginationQuery,
-//             ...combinedQuery,
-//             {
-//                 $match: {
-//                     $or: [
-//                         { title: { $regex: search, $options: 'i' } },
-//                         { publish_date: { $regex: search, $options: 'i' } },
-//                         { price: { $regex: search, $options: 'i' } },
-//                         { 'teacher.first_name': { $regex: search, $options: 'i' } },
-//                         { 'teacher.last_name': { $regex: search, $options: 'i' } },
-//                         { 'subject.name': { $regex: search, $options: 'i' } },
-//                         { 'subject.code': { $regex: search, $options: 'i' } },
-//                         { 'category.name': { $regex: search, $options: 'i' } },
-//                         { 'folder.name': { $regex: search, $options: 'i' } },
-//                     ],
-//                 },
-//             },
-//         ];
-
-//         const data = await repository.findByAggregateQuery(PaperModel, [
-//             {
-//                 $facet: {
-//                     papers: [...searchQuery, ...paginationQuery],
-//                     recordsTotal: [...searchQuery, { $count: 'count' }],
-//                 },
-//             },
-//         ]);
-//         papers = data[0]?.papers || [];
-//         recordsTotal = data[0]?.recordsTotal[0]?.count || 0;
-//     }
-
-//     const recordsFiltered = papers ? papers.length : 0;
-
-//     return {
-//         papers,
-//         recordsTotal,
-//         recordsFiltered,
-//     };
-// };
-
 module.exports.createPaper = async (body) => {
-  console.log("1");
   const existingSubject = await subjectService.getSubjectById(body.subject_id);
   if (!existingSubject) {
     throw new Error("Subject id not valid!");

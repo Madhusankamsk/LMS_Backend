@@ -10,7 +10,7 @@ const passwordValidation = joi
         'string.min': 'Password must be at least 8 characters long',
         'string.pattern.base': 'Password must not contain spaces',
     })
-    .required()
+    
 
 module.exports.createUser = joi.object().keys({
     _id: joi.string().required().max(24).min(24),
@@ -18,7 +18,7 @@ module.exports.createUser = joi.object().keys({
     last_name: joi.string().required(),
     profile_picture: joi.string(),
     phone: joi.string().length(10).required(),
-    password: passwordValidation,
+    password: passwordValidation.required(),
     address: joi.string(),
     shy: joi.string(),
     school: joi.string(),

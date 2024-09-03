@@ -15,10 +15,6 @@ module.exports.getEnrollPapers = (maxLimit) => {
 module.exports.createEnrollPaper = joi.object({
     paper_id: joi.string().required().max(24).min(24),
     user_id: joi.string().required().max(24).min(24),
-    student_link: joi.string(),
-    mark: joi.number(),
-    answer_time: joi.string(),
-    feedback: joi.string(),
 })
 
 module.exports.updateEnrollPaper = joi.object({
