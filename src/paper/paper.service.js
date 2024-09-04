@@ -164,20 +164,12 @@ module.exports.getPaperById = async (id) => {
 };
 
 module.exports.getPaperByIdToFrontEnd = async (id) => {
-  const existingPaper = await this.getPaperById(id);
-  if (!existingPaper) throw new Error("Invalid paper id");
-  
-  const matchQuery = {
-    is_deleted: {
-      $ne: true,
-    },
-  };
-
-  let paper;
-
-  const combinedQuery = [
+  const pipeline = [
     {
-      $match: matchQuery, 
+      $match: {
+        _id: new mongoose.Types.ObjectId(id),
+        is_deleted: false,
+      },
     },
     {
       $lookup: {
@@ -191,8 +183,9 @@ module.exports.getPaperByIdToFrontEnd = async (id) => {
           },
           {
             $project: {
+              _id:1,
               email: 1,
-              full_name: { $concat: ["$first_name", " ", "$last_name"] }
+              full_name: { $concat: ["$first_name", " ", "$last_name"] },
             },
           },
         ],
@@ -259,27 +252,31 @@ module.exports.getPaperByIdToFrontEnd = async (id) => {
     },
     {
       $addFields: {
-        subject: {
-          $arrayElemAt: ["$subject", 0],
-        },
-        category: {
-          $arrayElemAt: ["$category", 0],
-        },
-        folder: {
-          $arrayElemAt: ["$folder", 0],
-        },
-        teacher: {
-          $arrayElemAt: ["$teacher", 0],
-        },
+        subject: { $arrayElemAt: ["$subject", 0] },
+        category: { $arrayElemAt: ["$category", 0] },
+        folder: { $arrayElemAt: ["$folder", 0] },
+        teacher: { $arrayElemAt: ["$teacher", 0] },
+      },
+    },
+    {
+      $project: {
+        teacher_id: 0,
+        subject_id: 0,
+        category_id: 0,
+        folder_id: 0,
       },
     },
   ];
 
-  const data = await repository.findByAggregateQuery(PaperModel, combinedQuery);
+  const paperDetails = await repository.findByAggregateQuery(PaperModel, pipeline);
 
-  paper = data[0]?.paper || [];
+  if (!paperDetails || paperDetails.length === 0) {
+    throw new Error("Paper not found");
+  }
 
-  return paper;
+  return {
+    paper: paperDetails[0], // Return the first element as the result
+  };
 };
 
 module.exports.getPapers = async (body) => {

@@ -26,6 +26,9 @@ module.exports.getEnrollPaperById = async (id) => {
 }
 
 module.exports.getEnrollPaperByStudentIdWithPaperID = async (paperId, userId) => {
+    console.log("paper id: " + paperId);
+    console.log("userId: " + userId);
+
     const enrollPaper = await repository.findOne(PaperEnrollModel, {
         paper_id: new mongoose.Types.ObjectId(paperId),
         user_id: new mongoose.Types.ObjectId(userId),
