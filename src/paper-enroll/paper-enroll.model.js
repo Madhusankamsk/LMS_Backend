@@ -18,18 +18,18 @@ const schema = new mongoose.Schema(
         student_link: {
             type: String,
         },
+        teacher_link: {
+            type: String,
+        },
         mark: {
             type: Number,
-        },
-        student_answer_time: {
-            type: String,
         },
         feedback: {
             type: String,
         },
         status: {
             type: String,
-            default: studentAnswers.toDo,
+            default: studentAnswers.toDoStudent,
             trim: true,
         },
         is_active: {

@@ -9,9 +9,11 @@ module.exports.getEnrollPaperById = joi.object({
 
 module.exports.getEnrollPapers = (maxLimit) => {
     return joi.object().keys({
-        paper_id: joi.string().alphanum().min(24).max(24),
+        //paper_id: joi.string().alphanum().min(24).max(24),
+        user_id: joi.string().alphanum().min(24).max(24),
+        teacher_id: joi.string().alphanum().min(24).max(24),
         ...joiConfig.pagination(maxLimit),
-    });
+    }).xor('user_id', 'teacher_id'); // Ensures either user_id or teacher_id is required, but not both
 };
 
 module.exports.createEnrollPaper = joi.object({

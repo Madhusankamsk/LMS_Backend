@@ -43,6 +43,8 @@ module.exports.getEnrollPapers = async (body) => {
         page,
         search,
         paper_id,
+        teacher_id,
+        user_id,
         exclude = [],
     } = body;
     const column = body.column || -1;
@@ -78,12 +80,82 @@ module.exports.getEnrollPapers = async (body) => {
         }
     }
 
+    if (user_id) {
+        const existingUser = await userService.getUserById(user_id);
+        console.log("exsisting user: "+ existingUser)
+
+        if (existingUser) {
+            matchQuery = {
+                ...matchQuery,
+                'user_id': new mongoose.Types.ObjectId(user_id),
+            };
+        } else {
+            throw new Error('Invalid user _id');
+        }
+    }
+
 
 const prePaginationQuery = [
     {
         $match: matchQuery,
     },
 ];
+
+// const combinedQuery = [
+//     {
+//         $lookup: {
+//             from: 'papers',
+//             let: { paperID: '$paper_id' },
+//             pipeline: [
+//                 {
+//                     $match: {
+//                         $expr: { $eq: ['$_id', '$$paperID'] },
+//                     },
+//                 },
+//                 {
+//                     $project: {
+//                         title: 1,
+//                         teacher_id: 1,
+//                     },
+//                 },
+//             ],
+//             as: 'paper',
+//         },
+//     },
+//     {
+//         $addFields: {
+//             paper: {
+//                 $arrayElemAt: ['$paper', 0],
+//             },
+//         },
+//     },
+//     {
+//         $lookup: {
+//             from: 'users',
+//             let: { userID: '$user_id' },
+//             pipeline: [
+//                 {
+//                     $match: {
+//                         $expr: { $eq: ['$_id', '$$userID'] },
+//                     },
+//                 },
+//                 {
+//                     $project: {
+//                         email: 1,
+//                     },
+//                 },
+//             ],
+//             as: 'user',
+//         },
+//     },
+//     {
+//         $addFields: {
+//             user: {
+//                 $arrayElemAt: ['$user', 0],
+//             },
+//         },
+//     },
+// ];
 
 const combinedQuery = [
     {
@@ -99,8 +171,15 @@ const combinedQuery = [
                 {
                     $project: {
                         title: 1,
+                        teacher_id: 1,
                     },
                 },
+                // If teacher_id is provided, filter by teacher_id
+                ...(teacher_id ? [{
+                    $match: {
+                        teacher_id: new mongoose.Types.ObjectId(teacher_id),
+                    },
+                }] : []),
             ],
             as: 'paper',
         },
@@ -125,6 +204,7 @@ const combinedQuery = [
                 {
                     $project: {
                         email: 1,
+                        full_name: { $concat: ["$first_name", " ", "$last_name"] },
                     },
                 },
             ],
@@ -176,7 +256,7 @@ if (!search) {
         {
             $match: {
                 $or: [
-                    { mark: { $regex: search, $options: 'i' } },
+                    { 'paper.title': { $regex: search, $options: 'i' } },
                     { 'user.email': { $regex: search, $options: 'i' } },
                 ],
             },
@@ -186,12 +266,12 @@ if (!search) {
     const data = await repository.findByAggregateQuery(PaperEnrollModel, [
         {
             $facet: {
-                papers: [...searchQuery, ...paginationQuery],
+                enrollPapers: [...searchQuery, ...paginationQuery],
                 recordsTotal: [...searchQuery, { $count: 'count' }],
             },
         },
     ]);
-    enrollPapers = data[0]?.papers || [];
+    enrollPapers = data[0]?.enrollPapers || [];
     recordsTotal = data[0]?.recordsTotal[0]?.count || 0;
 }
 

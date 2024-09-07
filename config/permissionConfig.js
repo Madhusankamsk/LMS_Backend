@@ -12,9 +12,10 @@ const userRoles = {
 };
 
 const studentAnswers = {
-    toDo: "to-do",
-    draft: "dreaft",
-    submited: "submited",
+    toDoStudent: "to-do-student",
+    toDoTeacher: "to-do-teacher",
+    draft: "draft",
+    submitted: "submitted",
 };
 
 module.exports = { userStatus , userRoles , studentAnswers};
