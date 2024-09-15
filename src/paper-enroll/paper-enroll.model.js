@@ -18,6 +18,9 @@ const schema = new mongoose.Schema(
         student_link: {
             type: String,
         },
+        student_answer_time: {
+            type: String,
+        },
         teacher_link: {
             type: String,
         },

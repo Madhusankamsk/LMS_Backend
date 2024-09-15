@@ -23,12 +23,14 @@ module.exports.createEnrollPaper = joi.object({
 
 module.exports.updateEnrollPaper = joi.object({
     _id: joi.string().max(24).min(24).required(),
-    paper_id: joi.string().required().max(24).min(24),
-    user_id: joi.string().required().max(24).min(24),
+    paper_id: joi.string().max(24).min(24),
+    user_id: joi.string().max(24).min(24),
     student_link: joi.string(),
     mark: joi.number(),
     answer_time: joi.string(),
     feedback: joi.string(),
+    status: joi.string().required(),
+    student_answer_time: joi.string(),
 })
 
 module.exports.toggleEnrollPaper = joi.object({
