@@ -26,6 +26,7 @@ module.exports.updateEnrollPaper = joi.object({
     paper_id: joi.string().max(24).min(24),
     user_id: joi.string().max(24).min(24),
     student_link: joi.string(),
+    teacher_link: joi.string(),
     mark: joi.number(),
     answer_time: joi.string(),
     feedback: joi.string(),
