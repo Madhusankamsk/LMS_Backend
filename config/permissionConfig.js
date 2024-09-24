@@ -18,4 +18,9 @@ const studentAnswers = {
     submitted: "submitted",
 };
 
-module.exports = { userStatus , userRoles , studentAnswers};
+const payments = {
+    notTransfer: "not-transfer",
+    transfer: "transfer",
+};
+
+module.exports = { userStatus , userRoles , studentAnswers, payments};
