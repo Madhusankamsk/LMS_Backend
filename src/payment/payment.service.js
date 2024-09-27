@@ -166,6 +166,8 @@ module.exports.createPayment = async (body) => {
         throw new Error('User id not valid!');
     }
 
+    body.submitted_date = Date.now();
+    
     const newPayment = new PaymentModel(body);
     const saveResult = await repository.save(newPayment);
     return saveResult;

@@ -21,6 +21,14 @@ const schema = new mongoose.Schema(
             default: payments.notTransfer,
             required: true,
         },
+        submit_date: {
+            type: Date,
+            required: true,
+            default: Date.now
+        },
+        transfer_date: {
+            type: Date,
+        },
         is_deleted: {
             type: Boolean,
             required : true,

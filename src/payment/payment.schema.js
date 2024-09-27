@@ -19,8 +19,8 @@ module.exports.createPayment = joi.object({
 
 module.exports.updatePayment = joi.object({
     _id: joi.string().max(24).min(24).required(),
-    user_id: joi.string().required().max(24).min(24),
-    image_link: joi.string().required().min(1),
+    user_id: joi.string().max(24).min(24),
+    image_link: joi.string().min(1),
     price: joi.string(),
     status: joi.string(),
 })
