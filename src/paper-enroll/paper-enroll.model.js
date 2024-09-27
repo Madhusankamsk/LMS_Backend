@@ -19,7 +19,7 @@ const schema = new mongoose.Schema(
             type: String,
         },
         student_answer_time: {
-            type: String,
+            type: Number,
         },
         teacher_link: {
             type: String,

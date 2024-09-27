@@ -31,7 +31,7 @@ module.exports.updateEnrollPaper = joi.object({
     answer_time: joi.string(),
     feedback: joi.string(),
     status: joi.string().required(),
-    student_answer_time: joi.string(),
+    student_answer_time: joi.number(),
 })
 
 module.exports.toggleEnrollPaper = joi.object({
