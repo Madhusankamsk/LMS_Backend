@@ -18,7 +18,7 @@ const schema = new mongoose.Schema(
         },
         status: {
             type: String,
-            default: payments.notTransfer,
+            default: payments.toDoPayment,
             required: true,
         },
         submit_date: {

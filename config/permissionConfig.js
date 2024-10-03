@@ -19,8 +19,9 @@ const studentAnswers = {
 };
 
 const payments = {
-    notTransfer: "not-transfer",
-    transfer: "transfer",
+    toDoPayment: "to-do-payment",
+    approved: "approved",
+    notApproved: "not-approved",
 };
 
 module.exports = { userStatus , userRoles , studentAnswers, payments};
