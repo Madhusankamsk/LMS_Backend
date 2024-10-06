@@ -131,7 +131,8 @@ module.exports.getPayments = async (body) => {
             {
                 $match: {
                     $or: [
-                        { name: { $regex: search, $options: 'i' } },
+                        { submit_date: { $regex: search, $options: 'i' } },
+                        { transfer_date: { $regex: search, $options: 'i' } },
                         { 'user.full_name': { $regex: search, $options: "i" } },
                         { 'user.email': { $regex: search, $options: "i" } },
                     ],
@@ -139,16 +140,16 @@ module.exports.getPayments = async (body) => {
             },
         ]
 
-        const data = await repository.findByAggregateQuery(PaperModel, [
+        const data = await repository.findByAggregateQuery(PaymentModel, [
             {
                 $facet: {
-                    papers: [...searchQuery, ...paginationQuery],
+                    payments: [...searchQuery, ...paginationQuery],
                     recordsTotal: [...searchQuery, { $count: 'count' }],
                 },
             },
         ])
-        payments = pathOr([], [0, 'payment'], data)
-        recordsTotal = pathOr(0, [0, 'recordsTotal', 0, 'count'], data)
+        payments = data[0]?.payments || [];
+        recordsTotal = data[0]?.recordsTotal[0]?.count || 0;
     }
 
     const recordsFiltered = payments ? payments.length : 0

@@ -13,6 +13,7 @@ const { setLimitToPositiveValue } = require('../../services/commonService')
 const { includeExcludeFields } = require('../../services/queryService')
 const subjectService = require('../subject/subject.service');
 const categoryService = require('../categories/category.service');
+const paperService = require('../paper/paper.service');
 const userService = require('../user/user.service');
 
 // module.exports.togglePapersBySubject = async (subject_id, SubjectInactiveDate) => {
@@ -424,8 +425,11 @@ module.exports.toggleFolder = async (id) => {
 }
 
 module.exports.deleteFolder = async (id) => {
-    const existingPaper = await this.getPaperById(id.toString());
-    if (!existingPaper) throw new Error('Invalid paper _id');
+    const existingFolder = await this.getFolderById(id.toString());
+    if (!existingFolder) throw new Error('Invalid folder _id');
+
+    const existingPaper = await paperService.getPaperByFolderId(id.toString());
+    if (existingPaper) throw new Error('This folder has papers.');
 
     const paperToDelete = await repository.updateOne(
         FolderModel,

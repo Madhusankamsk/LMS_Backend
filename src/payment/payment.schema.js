@@ -21,8 +21,9 @@ module.exports.updatePayment = joi.object({
     _id: joi.string().max(24).min(24).required(),
     user_id: joi.string().max(24).min(24),
     image_link: joi.string().min(1),
-    price: joi.string(),
+    price: joi.number(),
     status: joi.string(),
+    transfer_date: joi.string(),
 })
 
 module.exports.deletePayment = joi.object({

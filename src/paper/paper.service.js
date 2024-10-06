@@ -163,6 +163,14 @@ module.exports.getPaperById = async (id) => {
   return paper;
 };
 
+module.exports.getPaperByFolderId = async (id) => {
+  const papers = await repository.findOne(PaperModel, {
+    folder_id: new mongoose.Types.ObjectId(id),
+    is_deleted: false,
+  });
+  return papers;
+};
+
 module.exports.getPaperByIdToFrontEnd = async (id) => {
   const pipeline = [
     {
