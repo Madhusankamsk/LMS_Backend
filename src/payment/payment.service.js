@@ -188,6 +188,36 @@ module.exports.updatePayment = async (body) => {
         throw new Error('Invalid payment status');
     }
 
+    if (body.status && body.status === payments.approved) {
+        const existingUser = await userService.getUserById(existingPayment.user_id);
+        if (!existingUser) {
+            throw new Error('User id not valid!');
+        }
+        const existingPrice = existingUser.price;
+        const approvedPrice = body.price;
+        const newUserPrice = existingPrice + approvedPrice;
+        await userService.updateUser({
+            _id: existingPayment.user_id,
+            price: newUserPrice,
+        })
+        await sendDefualtMail({
+            to: existingUser.email,
+            subject: 'Payment Approved',
+            text: `Your payment of ${body.price} has been approved.`
+        });
+    } else if (body.status === payments.notApproved) {
+        const existingUser = await userService.getUserById(existingPayment.user_id);
+        if (!existingUser) {
+            throw new Error('User id not valid!');
+        }
+        await sendDefualtMail({
+            to: existingUser.email,
+            subject: 'Payment Not Approved',
+            text: `Your payment of ${existingPayment.price} has not been approved.`
+        });
+    }
+    
+
     let PaymentToUpdate = await repository.updateOne(
         PaymentModel,
         {
