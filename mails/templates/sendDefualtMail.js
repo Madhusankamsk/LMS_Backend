@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-module.exports.forgotPassword = (body) => {
-    const { text, subject } = body;
+module.exports.sendDefualtMail = (body) => {
+    const { text, subject, name } = body;
   
     const sendDefualtMail = `
     <!DOCTYPE html>
@@ -97,4 +97,3 @@ module.exports.forgotPassword = (body) => {
   
     return sendDefualtMail;
   };
-  

@@ -13,6 +13,7 @@ const { setLimitToPositiveValue } = require('../../services/commonService')
 const { includeExcludeFields } = require('../../services/queryService')
 const userService = require('../user/user.service');
 const { payments } = require("../../config/permissionConfig");
+const { sendDefualtMail } = require("../../mails/mails.service");
 
 module.exports.getPaymentById = async (id) => {
     const payment = await repository.findOne(PaymentModel, {
@@ -203,7 +204,8 @@ module.exports.updatePayment = async (body) => {
         await sendDefualtMail({
             to: existingUser.email,
             subject: 'Payment Approved',
-            text: `Your payment of ${body.price} has been approved.`
+            text: `Your payment of ${body.price} has been approved.`,
+            name: existingUser.first_name,
         });
     } else if (body.status === payments.notApproved) {
         const existingUser = await userService.getUserById(existingPayment.user_id);
@@ -213,10 +215,10 @@ module.exports.updatePayment = async (body) => {
         await sendDefualtMail({
             to: existingUser.email,
             subject: 'Payment Not Approved',
-            text: `Your payment of ${existingPayment.price} has not been approved.`
+            text: `Your payment of ${existingPayment.price} has not been approved.`,
+            name: existingUser.first_name,
         });
-    }
-    
+    } 
 
     let PaymentToUpdate = await repository.updateOne(
         PaymentModel,

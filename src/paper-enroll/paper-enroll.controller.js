@@ -39,6 +39,7 @@ module.exports.updateEnrollPaper = async (req, res) => {
       const data = await service.updateEnrollPaper(req.body)
       return successWithData(data, res)
   } catch (error) {
+    console.log(error);
       return customError(error.message, res)
   }
 }

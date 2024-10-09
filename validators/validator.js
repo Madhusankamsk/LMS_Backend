@@ -78,7 +78,6 @@ module.exports.validateBody = (schema) => (req, res, next) => {
  */
 module.exports.validateHeader = (grantedArray, isReturnUserId) => (req, res, next) => jwt.verify(
     getTokenFromHeader(req), secret, async (err, decoded) => {
-        console.log("asdfbjksahdjksa");
         if (err) {
             return response.customError('Invalid Token', res)
         }

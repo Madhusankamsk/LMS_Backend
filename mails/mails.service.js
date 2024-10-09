@@ -73,7 +73,7 @@ module.exports.sendDefualtMail = async (body) => {
         to: body.to,
         from: process.env.NODEMAILER_EMAIL,
         subject: body.subject,
-        html: verifyMail(body),
+        html: sendDefualtMail(body),
         attachments: [logoAttachment],
     };
 
