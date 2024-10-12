@@ -37,7 +37,7 @@ const schema = new mongoose.Schema(
     { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )
 
-schema.index({ title: 1 })
+schema.index({ createdAt: 1 })
 
 const model = mongoose.model('comments', schema)
 module.exports = model

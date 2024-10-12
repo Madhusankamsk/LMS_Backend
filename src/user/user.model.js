@@ -109,9 +109,8 @@ schema.methods.setPassword = function (password) {
         .toString("hex");
 }
 
-schema.index({ email: 1, school: 1 }); // Indexing
+schema.index({ email: 1, school: 1 }); 
 
-// create modal
 const model = mongoose.model("users", schema);
 module.exports = model;
 

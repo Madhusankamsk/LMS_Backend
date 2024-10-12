@@ -41,7 +41,7 @@ const schema = new mongoose.Schema(
     { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )
 
-schema.index({ name: 1 }) // Indexing
+schema.index({ createdAt: 1 })
 
 const model = mongoose.model('payments', schema)
 module.exports = model

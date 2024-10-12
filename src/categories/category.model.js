@@ -38,8 +38,7 @@ const schema = new mongoose.Schema(
     { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
-schema.index({ name : 1 }); // Indexing
-schema.index({ name: -1, subject_id: -1 }); 
+schema.index({ name : 1 }); 
 
 const model = mongoose.model("categories", schema);
 module.exports = model;

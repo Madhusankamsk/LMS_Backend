@@ -32,8 +32,7 @@ const schema = new mongoose.Schema(
     { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
-schema.index({ name : 1 }); // Indexing
-schema.index({ name: -1, code: -1 }); 
+schema.index({ name: 1 }); // Indexing for ascending order of subject name
 
 const model = mongoose.model("subjects", schema);
 module.exports = model;
