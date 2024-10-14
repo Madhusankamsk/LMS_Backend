@@ -165,7 +165,7 @@ module.exports.getPayments = async (body) => {
 module.exports.createPayment = async (body) => {
     const existingUser = await userService.getUserById(body.user_id);
     if (!existingUser) {
-        throw new Error('User id not valid!');
+        throw new Error('User ID not valid!!!');
     }
 
     body.submitted_date = Date.now();
@@ -177,22 +177,22 @@ module.exports.createPayment = async (body) => {
 
 module.exports.updatePayment = async (body) => {
     const existingPayment = await this.getPaymentById(body._id);
-    if (!existingPayment) throw new Error('Invalid payment _id');
+    if (!existingPayment) throw new Error('Invalid payment ID!!!');
 
     if (body.user_id) {
         const existingUser = await userService.getUserById(body.user_id);
         if (!existingUser) {
-            throw new Error('User id not valid!');
+            throw new Error('User ID not valid!!!');
         }
     }
     if (body.status && !Object.values(payments).includes(body.status)) {
-        throw new Error('Invalid payment status');
+        throw new Error('Invalid payment status!!!');
     }
 
     if (body.status && body.status === payments.approved) {
         const existingUser = await userService.getUserById(existingPayment.user_id);
         if (!existingUser) {
-            throw new Error('User id not valid!');
+            throw new Error('User ID not valid!!!');
         }
         const existingPrice = existingUser.price;
         const approvedPrice = body.price;
@@ -210,7 +210,7 @@ module.exports.updatePayment = async (body) => {
     } else if (body.status === payments.notApproved) {
         const existingUser = await userService.getUserById(existingPayment.user_id);
         if (!existingUser) {
-            throw new Error('User id not valid!');
+            throw new Error('User ID not valid!!!');
         }
         await sendDefualtMail({
             to: existingUser.email,
@@ -236,7 +236,7 @@ module.exports.updatePayment = async (body) => {
 
 module.exports.deletePayment = async (id) => {
     const existingPayment = await this.getPaymentById(id.toString());
-    if (!existingPayment) throw new Error('Invalid payment _id');
+    if (!existingPayment) throw new Error('Invalid payment ID!!!');
     else if (existingPayment.status === payments.transfer) throw new Error('payment status is transfer');
 
     const paymentToDelete = await repository.updateOne(

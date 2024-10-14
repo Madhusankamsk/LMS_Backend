@@ -27,13 +27,7 @@ module.exports.getEnrollPaperById = async (id) => {
   return enrollPaper;
 };
 
-module.exports.getEnrollPaperByStudentIdWithPaperID = async (
-  paperId,
-  userId
-) => {
-  console.log("paper id: " + paperId);
-  console.log("userId: " + userId);
-
+module.exports.getEnrollPaperByStudentIdWithPaperID = async (paperId,userId) => {
   const enrollPaper = await repository.findOne(PaperEnrollModel, {
     paper_id: new mongoose.Types.ObjectId(paperId),
     user_id: new mongoose.Types.ObjectId(userId),
@@ -240,12 +234,12 @@ module.exports.getEnrollPapers = async (body) => {
 module.exports.createEnrollPaper = async (body) => {
   const existingPaper = await paperService.getPaperById(body.paper_id);
   if (!existingPaper) {
-    throw new Error("Paper id not valid!");
+    throw new Error("Paper ID not valid!!!");
   }
 
   const existingUser = await userService.getUserById(body.user_id);
   if (!existingUser) {
-    throw new Error("User id not valid!");
+    throw new Error("User ID not valid!!!");
   }
 
   const existinePaperEnroll = await this.getEnrollPaperByStudentIdWithPaperID(
@@ -253,11 +247,11 @@ module.exports.createEnrollPaper = async (body) => {
     body.user_id
   );
   if (existinePaperEnroll) {
-    throw new Error("User already enroll to this paper!");
+    throw new Error("User is already enrolled to this paper!!!");
   }
 
   if (existingUser.price < existingPaper.price) {
-    throw new Error("User amount is not enough to buy this paper!");
+    throw new Error("Your balance is not sufficient to purchase this paper!!!");
   }
 
   const existingTeacher = await userService.getUserById(
@@ -283,18 +277,18 @@ module.exports.createEnrollPaper = async (body) => {
 
 module.exports.updateEnrollPaper = async (body) => {
   const existingPaperEnroll = await this.getEnrollPaperById(body._id);
-  if (!existingPaperEnroll) throw new Error("Invalid paper-enroll _id");
+  if (!existingPaperEnroll) throw new Error("Invalid paper enrollment ID!!!");
   if (body.paper_id) {
     const existingPaper = await paperService.getPaperById(body.paper_id);
     if (!existingPaper) {
-      throw new Error("Paper id not valid!");
+      throw new Error("Paper ID not valid!!!");
     }
   }
 
   if (body.user_id) {
     const existingUser = await userService.getUserById(body.user_id);
     if (!existingUser) {
-      throw new Error("User id not valid!");
+      throw new Error("User ID not valid!!!");
     }
   }
 
@@ -310,23 +304,20 @@ module.exports.updateEnrollPaper = async (body) => {
   );
 
   if (body.status) {
-    console.log("body.status: " + body.status);
     if (enrollPaperToUpdate.user_id) {
       const student = await userService.getUserById(
         enrollPaperToUpdate.user_id
       );
-      console.log("student: " + student);
       if (!student) {
-        throw new Error("User id not valid!");
+        throw new Error("User ID not valid!!!");
       }
-      console.log("enrollPaperToUpdate.paper_id: " + enrollPaperToUpdate.paper_id);
+
       if (enrollPaperToUpdate.paper_id) {
         const paper = await paperService.getPaperById(enrollPaperToUpdate.paper_id);
         if (!paper) {
-          throw new Error("Paper id not valid!");
+          throw new Error("Paper ID not valid!!!");
         }
 
-        console.log("body.status: " + body.status);
         if (body.status === studentAnswers.submitted) {
           await sendDefualtMail({
             to: student.email,
@@ -338,14 +329,14 @@ module.exports.updateEnrollPaper = async (body) => {
       }
     }
   }
-  console.log("enrollPaperToUpdate: " + enrollPaperToUpdate);
+
   enrollPaperToUpdate = enrollPaperToUpdate.toObject();
   return enrollPaperToUpdate;
 };
 
 module.exports.deleteEnrollPaper = async (id) => {
   const existingEnrollPaper = await this.getEnrollPaperById(id.toString());
-  if (!existingEnrollPaper) throw new Error("Invalid paper enroll _id");
+  if (!existingEnrollPaper) throw new Error("Invalid paper enrollment ID!!!");
 
   const enrollPaperToDelete = await repository.updateOne(
     PaperEnrollModel,

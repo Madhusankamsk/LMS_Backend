@@ -132,7 +132,7 @@ module.exports.createSubject = async (body) => {
     const existingCode = await this.getSubjectByCode(body.code, false);
 
     if (existingCode) {
-        throw new Error('Subject code is already taken!');
+        throw new Error('Subject code is already taken!!!');
     }
 
     const newSubjectToSave = new SubjectModel(body);
@@ -142,13 +142,13 @@ module.exports.createSubject = async (body) => {
 
 module.exports.updateSubject = async (body) => {
     const existingSubject = await this.getSubjectById(body._id);
-    if (!existingSubject) throw new Error('Invalid subject _id');
+    if (!existingSubject) throw new Error('Invalid subject ID!!!');
 
     if(body.code){
         const existingSubjectWithSameCode = await this.getSubjectByCode(body.code);
         if(existingSubjectWithSameCode){
             if(existingSubjectWithSameCode.code !== existingSubject.code){
-                throw new Error('Subject code already taken!');
+                throw new Error('Subject code already taken!!!');
             }
         }
 
@@ -170,7 +170,7 @@ module.exports.updateSubject = async (body) => {
 
 module.exports.toggleSubject = async (id) => {
     const existingSubject = await this.getSubjectById(id.toString());
-    if (!existingSubject) throw new Error('Invalid subject _id');
+    if (!existingSubject) throw new Error('Invalid subject ID!!!');
 
     if(existingSubject.is_active){
         const subjectToToggle = await repository.updateOne(
@@ -223,7 +223,7 @@ module.exports.toggleSubject = async (id) => {
 
 module.exports.deleteSubject = async (id) => {
     const existingSubject = await this.getSubjectById(id.toString());
-    if (!existingSubject) throw new Error('Invalid subject _id');
+    if (!existingSubject) throw new Error('Invalid subject ID!!!');
 
     const categoriesToDelete = await categoryService.deleteCategoriesBySubject(existingSubject._id);
     const papersToDelete = await paperService.deletePapersBySubject(existingSubject._id);

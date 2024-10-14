@@ -114,9 +114,8 @@ module.exports.userEmailVerify = async (body) => {
     const emailResetCode = generateFourByteCode();
 
     if (user) {
-        //throw new Error('Email is Already Registed')
         if(user.status === userStatus.registed){
-            throw new Error('Email is Already Registed')
+            throw new Error('Email is already registered!!!')
         }
         const userUpdate = await this.updateUser({
             _id: user._id,
@@ -126,7 +125,7 @@ module.exports.userEmailVerify = async (body) => {
         await verifyMail({
             to: user.email,
             email_verify_code: emailResetCode,
-            subject: 'Your Email Verify Code',
+            subject: 'Your email verification code.',
         })
         return userUpdate;
 
@@ -143,7 +142,7 @@ module.exports.userEmailVerify = async (body) => {
         await verifyMail({
             to: userUpdate.email,
             email_verify_code: emailResetCode,
-            subject: 'Your Email Verify Code',
+            subject: 'Your email verification code.',
         })
 
         return userUpdate;
@@ -157,11 +156,11 @@ module.exports.userEmailVerifyWithCode = async (body) => {
     if (!user) {
         throw new Error('user not found')
     } else if (user.status === userStatus.registed) {
-        throw new Error('Email is Already Registed')
+        throw new Error('Email is already registered!!!')
     }
 
     if (body.email_verify_code !== user.email_verify_code) {
-        throw new Error('Invalid reset code.')
+        throw new Error('Invalid reset code!!!')
     }
 
     if (
@@ -170,7 +169,7 @@ module.exports.userEmailVerifyWithCode = async (body) => {
             .subtract(userConfig.passwordResetCodeExpireDuration, 'minutes')
             .toDate()
     ) {
-        throw new Error('Reset code expired.')
+        throw new Error('Reset code expired!!!')
     }
 
     const userUpdate = await this.updateUser({
@@ -185,22 +184,22 @@ module.exports.createUser = async (body) => {
     const existingUser = await this.getUserById(body._id, false)
 
     if (!existingUser) {
-        throw new Error('User Not Found')
+        throw new Error('User not found!!!')
     } 
     else {
         if (existingUser.status === userStatus.notConfirmed) {
-            throw new Error('Email is Not Verify')
+            throw new Error('Email is not verified!!!')
         } 
 
         if (existingUser.status === userStatus.registed) {
-            throw new Error('Email is Already Registed')
+            throw new Error('Email is already registered!!!')
         }
         else if (existingUser.status === userStatus.confirmed) {
             const existingPhone = await this.getUserByPhoneNumber(body.phone, false)
             if (existingPhone && existingPhone._id.toString() !== existingUser._id.toString()) {
                 console.log(existingPhone._id )
                 console.log(existingUser._id)
-                throw new Error('Phone number already exists.')
+                throw new Error('Phone number already exists!!!')
             }
 
             let userUpdate = await this.updateUser({
@@ -218,7 +217,7 @@ module.exports.createUser = async (body) => {
                 name: fullName,
                 to: userUpdate.email,
                 new_password: body.password,
-                subject: 'Congratulations! Your account has been created',
+                subject: 'Congratulations! Your account has been created.',
             })
         
             return userUpdate
@@ -228,12 +227,12 @@ module.exports.createUser = async (body) => {
 
 module.exports.loginUser = async (body) => {
     let user = await this.getUserByEmail(body.email, false)
-    const invalidEmailOrPassword = 'Invalid username or password.'
+    const invalidEmailOrPassword = 'Invalid credentials!!!'
 
     if (user) {
         if (!user.is_active) {
             throw new Error(
-                'Your account has been blocked by the system administrator'
+                'Your account has been blocked by the system administrator!!!'
             )
         }
 
@@ -262,14 +261,14 @@ module.exports.loginUser = async (body) => {
 module.exports.updateUser = async (body) => {
     const user = await this.getUserById(body._id)
 
-    if (!user) throw new Error('Invalid user id')
+    if (!user) throw new Error('Invalid user ID!!!')
 
     // Email validation
     if (body.email) {
         const userByEmail = await this.getUserByEmail(body.email, false)
 
         if (userByEmail && userByEmail._id.toString() !== body._id) {
-            throw new Error('Email already exists.')
+            throw new Error('Email already exists!!!')
         }
     }
 
@@ -278,7 +277,7 @@ module.exports.updateUser = async (body) => {
         const userByPhone = await this.getUserByPhoneNumber(body.phone, false)
 
         if (userByPhone && userByPhone._id.toString() !== body._id) {
-            throw new Error('Phone Number is already exists.')
+            throw new Error('Phone number already exists!!!')
         }
     }
 
@@ -319,7 +318,7 @@ module.exports.userForgotPasswordEmail = async (body) => {
     const user = await this.getUserByEmail(email, false)
 
     if (!user) {
-        throw new Error('invalid email')
+        throw new Error('Invalid email!!!')
     }
 
     const passwordRestCode = generateFourByteCode();
@@ -346,11 +345,11 @@ module.exports.userForgotPasswordReset = async (body) => {
     const user = await this.getUserByEmail(body.email, false)
 
     if (!user) {
-        throw new Error('user not found')
+        throw new Error('User not found!!!')
     }
 
     if (body.password_reset_code !== user.password_reset_code) {
-        throw new Error('Invalid reset code.')
+        throw new Error('Invalid reset code!!!')
     }
 
     if (
@@ -359,7 +358,7 @@ module.exports.userForgotPasswordReset = async (body) => {
             .subtract(userConfig.passwordResetCodeExpireDuration, 'minutes')
             .toDate()
     ) {
-        throw new Error('Reset code expired.')
+        throw new Error('Reset code expired!!!')
     }
 
     await repository.save(user);
@@ -375,9 +374,6 @@ module.exports.userForgotPasswordReset = async (body) => {
 
     return userToReturn;
 }
-
-
-
 
 
 // module.exports.userPasswordReset = async (body) => {

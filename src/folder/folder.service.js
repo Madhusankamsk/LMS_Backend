@@ -16,138 +16,6 @@ const categoryService = require('../categories/category.service');
 const paperService = require('../paper/paper.service');
 const userService = require('../user/user.service');
 
-// module.exports.togglePapersBySubject = async (subject_id, SubjectInactiveDate) => {
-//     const existingSubject = await subjectService.getSubjectById(subject_id);
-//     if (!existingSubject) throw new Error('Invalid subject _id');
-
-//     if(existingSubject.is_active){
-//         const papersToToggle = await repository.updateMany(
-//             PaperModel,
-//             {
-//                 subject_id: new mongoose.Types.ObjectId(subject_id),
-//                 inactive_date: SubjectInactiveDate,
-//             },
-//             {
-//                 $set: {
-//                     is_active: true,
-//                     inactive_date: null,
-//                 },
-//             },
-//             {
-//                 new: true, 
-//             }
-//         );
-//         return papersToToggle
-//     } else {
-//         const papersToToggle = await repository.updateMany(
-//             PaperModel,
-//             {
-//                 subject_id: new mongoose.Types.ObjectId(subject_id),
-//                 inactive_date: null, 
-//             },
-//             {
-//                 $set: {
-//                     is_active: false,
-//                     inactive_date: SubjectInactiveDate,
-//                 },
-//             },
-//             {
-//                 new: true, 
-//             }
-//         );
-//         return papersToToggle
-//     }
-// }
-
-// module.exports.togglePapersByCategory = async (category_id, CategoryInactiveDate) => {
-//     const existingCategory = await categoryService.getCategoryById(category_id);
-//     if (!existingCategory) throw new Error('Invalid category _id');
-
-//     if(existingCategory.is_active){
-//         const papersToToggle = await repository.updateMany(
-//             PaperModel,
-//             {
-//                 category_id: new mongoose.Types.ObjectId(category_id),
-//                 inactive_date: CategoryInactiveDate,
-//             },
-//             {
-//                 $set: {
-//                     is_active: true,
-//                     inactive_date: null,
-//                 },
-//             },
-//             {
-//                 new: true, 
-//             }
-//         );
-//         return papersToToggle
-//     } else {
-//         const papersToToggle = await repository.updateMany(
-//             PaperModel,
-//             {
-//                 category_id: new mongoose.Types.ObjectId(category_id),
-//                 inactive_date: null, 
-//             },
-//             {
-//                 $set: {
-//                     is_active: false,
-//                     inactive_date: CategoryInactiveDate,
-//                 },
-//             },
-//             {
-//                 new: true, 
-//             }
-//         );
-//         return papersToToggle
-//     }
-// }
-
-// module.exports.deletePapersBySubject = async (subject_id) => {
-//     const existingSubject = await subjectService.getSubjectById(subject_id);
-//     if (!existingSubject) throw new Error('Invalid subject _id');
-
-//     const papersToDelete = await repository.updateMany(
-//         PaperModel,
-//         {
-//             subject_id: new mongoose.Types.ObjectId(subject_id),
-//         },
-//         {
-//             $set: {
-//                 is_deleted: true,
-//                 delete_date: new Date(),
-//             },
-//         },
-//         {
-//             new: true, 
-//         }
-//     );
-
-//     return papersToDelete;
-// }
-
-// module.exports.deletePapersByCategory = async (category_id) => {
-//     const existingCategory = await subjectService.getSubjectById(category_id);
-//     if (!existingCategory) throw new Error('Invalid category _id');
-
-//     const papersToDelete = await repository.updateMany(
-//         PaperModel,
-//         {
-//             category_id: new mongoose.Types.ObjectId(category_id),
-//         },
-//         {
-//             $set: {
-//                 is_deleted: true,
-//                 delete_date: new Date(),
-//             },
-//         },
-//         {
-//             new: true, 
-//         }
-//     );
-
-//     return papersToDelete;
-// }
-
 module.exports.getFolderById = async (id) => {
     const folder = await repository.findOne(FolderModel, {
         _id: new mongoose.Types.ObjectId(id),
@@ -324,21 +192,17 @@ module.exports.getFolders = async (body) => {
 module.exports.createFolder = async (body) => {
     const existingSubject = await subjectService.getSubjectById(body.subject_id);
     if (!existingSubject) {
-        throw new Error('Subject id not valid!');
+        throw new Error('Subject ID not valid!!!');
     }
 
     const existingCategory = await categoryService.getCategoryById(body.category_id);
     if (!existingCategory) {
-        throw new Error('Category id not valid!');
+        throw new Error('Category ID not valid!!!');
     }
 
     if(!existingCategory.has_folder){
-        throw new Error('This Category Type does not support folders!');
+        throw new Error('This category type does not support folders!!!');
     }
-    // const existingUser = await userService.getUserById(body.teacher_id);// need to check if teacher id
-    // if (!existingUser) {
-    //     throw new Error('User id not valid!');
-    // }
 
     const newFoderToSave = new FolderModel(body);
     const saveResult = await repository.save(newFoderToSave);
@@ -347,27 +211,20 @@ module.exports.createFolder = async (body) => {
 
 module.exports.updateFolder = async (body) => {
     const existingPaper = await this.getFolderById(body._id);
-    if (!existingPaper) throw new Error('Invalid folder _id');
+    if (!existingPaper) throw new Error('Invalid folder ID!!!');
     if (body.subject_id) {
         const existingSubject = await subjectService.getSubjectById(body.subject_id);
         if (!existingSubject) {
-            throw new Error('Subject id not valid!');
+            throw new Error('Subject ID not valid!!!');
         }
     }
 
     if (body.category_id) {
         const existingCategory = await categoryService.getCategoryById(body.category_id);
         if (!existingCategory) {
-            throw new Error('Category id not valid!');
+            throw new Error('Category ID not valid!!!');
         }
     }
-
-    // if (body.teacher_id) {
-    //     const existingUser = await userService.getUserById(body.teacher_id);// need to check if teacher id
-    //     if (!existingUser) {
-    //         throw new Error('User id not valid!');
-    //     }
-    // }
 
     let folderToUpdate = await repository.updateOne(
         FolderModel,
@@ -385,7 +242,7 @@ module.exports.updateFolder = async (body) => {
 
 module.exports.toggleFolder = async (id) => {
     const existingPaper = await this.getPaperById(id.toString());
-    if (!existingPaper) throw new Error('Invalid paper _id');
+    if (!existingPaper) throw new Error('Invalid paper ID!!!');
 
     if (existingPaper.is_active) {
         const paperToToggle = await repository.updateOne(
@@ -426,10 +283,10 @@ module.exports.toggleFolder = async (id) => {
 
 module.exports.deleteFolder = async (id) => {
     const existingFolder = await this.getFolderById(id.toString());
-    if (!existingFolder) throw new Error('Invalid folder _id');
+    if (!existingFolder) throw new Error('Invalid folder ID!!!');
 
     const existingPaper = await paperService.getPaperByFolderId(id.toString());
-    if (existingPaper) throw new Error('This folder has papers.');
+    if (existingPaper) throw new Error('This folder has papers!!!');
 
     const paperToDelete = await repository.updateOne(
         FolderModel,

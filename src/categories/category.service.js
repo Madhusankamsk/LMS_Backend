@@ -25,9 +25,8 @@ module.exports.getCategoryByNameWithSameSubject = async (name, subject_id, filte
 }
 
 module.exports.toggleCategoriesBySubject = async (subject_id, SubjectInactiveDate) => {
-    //Assume subject_id is existing one,
     const existingSubject = await subjectService.getSubjectById(subject_id);
-    if (!existingSubject) throw new Error('Invalid subject _id');
+    if (!existingSubject) throw new Error('Invalid subject ID!!!');
 
     if(existingSubject.is_active){
         console.log(typeof existingSubject.inactive_date);
@@ -75,7 +74,7 @@ module.exports.toggleCategoriesBySubject = async (subject_id, SubjectInactiveDat
 
 module.exports.deleteCategoriesBySubject = async (subject_id) => {
     const existingSubject = await subjectService.getSubjectById(subject_id);
-    if (!existingSubject) throw new Error('Invalid subject _id');
+    if (!existingSubject) throw new Error('Invalid subject ID!!!');
 
     const categoriesToDelete = await repository.updateMany(
         CategoryModel,
@@ -245,12 +244,12 @@ module.exports.getCategories = async (body) => {
 module.exports.createCategory = async (body) => {
     const existingSubject = await subjectService.getSubjectById(body.subject_id);
     if (!existingSubject) {
-        throw new Error('Subject id not valid!');
+        throw new Error('Invalid subject ID!!!');
     }
 
     const existingNameWithSameSubject = await this.getCategoryByNameWithSameSubject(body.name, body.subject_id);
     if (existingNameWithSameSubject) {
-        throw new Error('Category is already taken to this subject!');
+        throw new Error('This category is already assigned to this subject!!!');
     }
 
     const newCategoryToSave = new CategoryModel(body);
@@ -260,12 +259,12 @@ module.exports.createCategory = async (body) => {
 
 module.exports.updateCategory = async (body) => {
     const existingCategory = await this.getCategoryById(body._id);
-    if (!existingCategory) throw new Error('Invalid category _id');
+    if (!existingCategory) throw new Error('Invalid category ID!!!');
 
     if (body.subject_id) {
         const existingSubject = await subjectService.getSubjectById(body.subject_id);
         if (!existingSubject) {
-            throw new Error('Subject id not valid!');
+            throw new Error('Subject ID not valid!!!');
         }
     }
 
@@ -273,7 +272,7 @@ module.exports.updateCategory = async (body) => {
         const existingNameWithSameSubject = await this.getCategoryByNameWithSameSubject(body.name, body.subject_id, false);
         if (existingNameWithSameSubject) {
             if (existingNameWithSameSubject.name !== existingCategory.name) {
-                throw new Error('Category is already taken to this subject!!');
+                throw new Error('This category is already assigned to this subject!!!');
             }
         }
 
@@ -295,7 +294,7 @@ module.exports.updateCategory = async (body) => {
 
 module.exports.toggleCategory = async (id) => {
     const existingCategory = await this.getCategoryById(id.toString());
-    if (!existingCategory) throw new Error('Invalid category _id');
+    if (!existingCategory) throw new Error('Invalid category ID!!!');
 
     if(existingCategory.is_active){
         const categoryToToggle = await repository.updateOne(
@@ -344,7 +343,7 @@ module.exports.toggleCategory = async (id) => {
 
 module.exports.deleteCategory = async (id) => {
     const existingCategory = await this.getCategoryById(id.toString());
-    if (!existingCategory) throw new Error('Invalid category _id');
+    if (!existingCategory) throw new Error('Invalid category ID!!!');
 
     const papersToDelete = await paperService.deletePapersByCategory(existingCategory._id);
 

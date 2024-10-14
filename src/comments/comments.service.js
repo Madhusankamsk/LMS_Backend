@@ -187,12 +187,12 @@ module.exports.getComments = async (body) => {
 module.exports.createComment = async (body) => {
     const existingPaper = await paperService.getPaperById(body.paper_id);
     if (!existingPaper) {
-        throw new Error('Paper id not valid!');
+        throw new Error('Paper ID not valid!!!');
     }
 
     const existingUser = await userService.getUserById(body.user_id);
     if (!existingUser) {
-        throw new Error('User id not valid!');
+        throw new Error('User ID not valid!!!');
     }
 
     const newCommentToSave = new CommentModel(body);
@@ -202,18 +202,18 @@ module.exports.createComment = async (body) => {
 
 module.exports.updateComment = async (body) => {
     const existingComment = await this.getCommentById(body._id);
-    if (!existingComment) throw new Error('Invalid comment _id');
+    if (!existingComment) throw new Error('Invalid comment ID!!!');
     if (body.paper_id) {
         const existingPaper = await paperService.getPaperById(body.paper_id);
         if (!existingPaper) {
-            throw new Error('Paper id not valid!');
+            throw new Error('Paper ID not valid!!!');
         }
     }
 
     if (body.user_id) {
         const existingUser = await userService.getUserById(body.user_id);
         if (!existingUser) {
-            throw new Error('User id not valid!');
+            throw new Error('User ID not valid!!!');
         }
     }
 
@@ -233,7 +233,7 @@ module.exports.updateComment = async (body) => {
 
 module.exports.deleteComment = async (id) => {
     const existingComment = await this.getCommentById(id.toString());
-    if (!existingComment) throw new Error('Invalid comment _id');
+    if (!existingComment) throw new Error('Invalid comment ID!!!');
 
     const commentToDelete = await repository.updateOne(
         CommentModel,

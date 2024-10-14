@@ -17,12 +17,9 @@ const folderService = require("../folder/folder.service");
 const userService = require("../user/user.service");
 const paperEnrollService = require("../paper-enroll/paper-enroll.service");
 
-module.exports.togglePapersBySubject = async (
-  subject_id,
-  SubjectInactiveDate
-) => {
+module.exports.togglePapersBySubject = async (subject_id, SubjectInactiveDate) => {
   const existingSubject = await subjectService.getSubjectById(subject_id);
-  if (!existingSubject) throw new Error("Invalid subject _id");
+  if (!existingSubject) throw new Error("Invalid subject ID!!!");
 
   if (existingSubject.is_active) {
     const papersToToggle = await repository.updateMany(
@@ -63,12 +60,9 @@ module.exports.togglePapersBySubject = async (
   }
 };
 
-module.exports.togglePapersByCategory = async (
-  category_id,
-  CategoryInactiveDate
-) => {
+module.exports.togglePapersByCategory = async (category_id, CategoryInactiveDate) => {
   const existingCategory = await categoryService.getCategoryById(category_id);
-  if (!existingCategory) throw new Error("Invalid category _id");
+  if (!existingCategory) throw new Error("Invalid category ID!!!");
 
   if (existingCategory.is_active) {
     const papersToToggle = await repository.updateMany(
@@ -111,7 +105,7 @@ module.exports.togglePapersByCategory = async (
 
 module.exports.deletePapersBySubject = async (subject_id) => {
   const existingSubject = await subjectService.getSubjectById(subject_id);
-  if (!existingSubject) throw new Error("Invalid subject _id");
+  if (!existingSubject) throw new Error("Invalid subject ID!!!");
 
   const papersToDelete = await repository.updateMany(
     PaperModel,
@@ -134,7 +128,7 @@ module.exports.deletePapersBySubject = async (subject_id) => {
 
 module.exports.deletePapersByCategory = async (category_id) => {
   const existingCategory = await subjectService.getSubjectById(category_id);
-  if (!existingCategory) throw new Error("Invalid category _id");
+  if (!existingCategory) throw new Error("Invalid category ID!!!");
 
   const papersToDelete = await repository.updateMany(
     PaperModel,
@@ -279,7 +273,7 @@ module.exports.getPaperByIdToFrontEnd = async (id) => {
   const paperDetails = await repository.findByAggregateQuery(PaperModel, pipeline);
 
   if (!paperDetails || paperDetails.length === 0) {
-    throw new Error("Paper not found");
+    throw new Error("Paper not found!!!");
   }
 
   return {
@@ -294,7 +288,7 @@ module.exports.getPapers = async (body) => {
     page,
     search,
     parent_id,
-    user_id, // Add user_id here
+    user_id, 
     exclude = [],
   } = body;
 
@@ -540,25 +534,25 @@ module.exports.getPapers = async (body) => {
 module.exports.createPaper = async (body) => {
   const existingSubject = await subjectService.getSubjectById(body.subject_id);
   if (!existingSubject) {
-    throw new Error("Subject id not valid!");
+    throw new Error("Subject ID not valid!!!");
   }
 
   const existingCategory = await categoryService.getCategoryById(
     body.category_id
   );
   if (!existingCategory) {
-    throw new Error("Category id not valid!");
+    throw new Error("Category ID not valid!!!");
   }
 
   const existingUser = await userService.getUserById(body.teacher_id); // need to check if teacher id
   if (!existingUser) {
-    throw new Error("User id not valid!");
+    throw new Error("User ID not valid!!!");
   }
 
   if (body.folder_id) {
     const existingFolder = await folderService.getFolderById(body.folder_id);
     if (!existingFolder) {
-      throw new Error("Folder id not valid!");
+      throw new Error("Folder ID not valid!!!");
     }
   }
 
@@ -569,13 +563,13 @@ module.exports.createPaper = async (body) => {
 
 module.exports.updatePaper = async (body) => {
   const existingPaper = await this.getPaperById(body._id);
-  if (!existingPaper) throw new Error("Invalid paper _id");
+  if (!existingPaper) throw new Error("Invalid paper ID!!!");
   if (body.subject_id) {
     const existingSubject = await subjectService.getSubjectById(
       body.subject_id
     );
     if (!existingSubject) {
-      throw new Error("Subject id not valid!");
+      throw new Error("Subject ID not valid!!!");
     }
   }
 
@@ -584,21 +578,21 @@ module.exports.updatePaper = async (body) => {
       body.category_id
     );
     if (!existingCategory) {
-      throw new Error("Category id not valid!");
+      throw new Error("Category ID not valid!!!");
     }
   }
 
   if (body.teacher_id) {
     const existingUser = await userService.getUserById(body.teacher_id); // need to check if teacher id
     if (!existingUser) {
-      throw new Error("User id not valid!");
+      throw new Error("User ID not valid!!!");
     }
   }
 
   if (body.folder_id) {
     const existingFolder = await folderService.getFolderById(body.folder_id);
     if (!existingFolder) {
-      throw new Error("Folder id not valid!");
+      throw new Error("Folder ID not valid!!!");
     }
   }
 
@@ -618,7 +612,7 @@ module.exports.updatePaper = async (body) => {
 
 module.exports.togglePaper = async (id) => {
   const existingPaper = await this.getPaperById(id.toString());
-  if (!existingPaper) throw new Error("Invalid paper _id");
+  if (!existingPaper) throw new Error("Invalid paper ID!!!");
 
   if (existingPaper.is_active) {
     const paperToToggle = await repository.updateOne(
@@ -659,7 +653,7 @@ module.exports.togglePaper = async (id) => {
 
 module.exports.deletePaper = async (id) => {
   const existingPaper = await this.getPaperById(id.toString());
-  if (!existingPaper) throw new Error("Invalid paper _id");
+  if (!existingPaper) throw new Error("Invalid paper ID!!!");
 
   const paperToDelete = await repository.updateOne(
     PaperModel,
