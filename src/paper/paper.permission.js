@@ -3,7 +3,7 @@ const { superAdmin } = require("../../config/permissionConfig").userRoles;
 
 module.exports.permissions = {
     getPaperById: {
-        path: "/:id",
+        path: "/:paper_id/:user_id",
         granted: [superAdmin],
     },
     getPapers: {

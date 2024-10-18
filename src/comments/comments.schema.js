@@ -22,7 +22,7 @@ module.exports.createComment= joi.object({
 module.exports.updateComment= joi.object({
     _id: joi.string().max(24).min(24).required(),
     comment: joi.string().required().min(1),
-    paper_id: joi.string().required().max(24).min(24),
+    paper_id: joi.string().max(24).min(24),
     user_id: joi.string().required().max(24).min(24),
 });
 

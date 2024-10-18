@@ -215,6 +215,10 @@ module.exports.updateComment = async (body) => {
         if (!existingUser) {
             throw new Error('User ID not valid!!!');
         }
+
+        if (body.user_id !== existingComment.user_id.toString()) {
+            throw new Error('You are not allowed to update this comment!!!');
+        }
     }
 
     let commentToUpdate = await repository.updateOne(

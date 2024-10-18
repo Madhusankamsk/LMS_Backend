@@ -2,7 +2,8 @@ const joi = require('joi')
 const joiConfig = require('../../config/joiConfig')
 
 module.exports.getPaperById = joi.object({
-    id: joi.string().required().max(24).min(24),
+    paper_id: joi.string().required().max(24).min(24),
+    user_id: joi.string().required().max(24).min(24),
 });
 
 module.exports.getPapers = (maxLimit) => {

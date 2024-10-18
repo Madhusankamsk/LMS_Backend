@@ -321,6 +321,10 @@ module.exports.userForgotPasswordEmail = async (body) => {
         throw new Error('Invalid email!!!')
     }
 
+    if (!(user.status === userStatus.registed)) {
+        throw new Error('Please complete your registration!!!')
+    }
+
     const passwordRestCode = generateFourByteCode();
 
     await this.updateUser({
@@ -374,22 +378,6 @@ module.exports.userForgotPasswordReset = async (body) => {
 
     return userToReturn;
 }
-
-
-// module.exports.userPasswordReset = async (body) => {
-//     const user = await this.getUserById({
-//         id: body._id,
-//     })
-
-//     if (!user) {
-//         throw new Error('user not found')
-//     }
-
-//     user.setPassword(body.password)
-//     await repository.save(user)
-
-//     return 'success'
-// }
 
 
 

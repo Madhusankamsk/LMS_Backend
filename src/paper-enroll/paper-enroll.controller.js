@@ -8,7 +8,6 @@ const {
 
 module.exports.getEnrollPaperById = async (req, res) => {
   try {
-    console.log(req.params.paper_id);
       const data = await service.getEnrollPaperByStudentIdWithPaperID(req.params.paper_id, req.params.user_id);
       return successWithData(data, res);
   } catch (error) {

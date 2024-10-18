@@ -179,6 +179,10 @@ module.exports.updatePayment = async (body) => {
     const existingPayment = await this.getPaymentById(body._id);
     if (!existingPayment) throw new Error('Invalid payment ID!!!');
 
+    if (existingPayment.status === payments.approved || existingPayment.status === payments.notApproved) {
+        throw new Error('Payment has already been processed and cannot be updated.');
+    }
+
     if (body.user_id) {
         const existingUser = await userService.getUserById(body.user_id);
         if (!existingUser) {
@@ -237,7 +241,8 @@ module.exports.updatePayment = async (body) => {
 module.exports.deletePayment = async (id) => {
     const existingPayment = await this.getPaymentById(id.toString());
     if (!existingPayment) throw new Error('Invalid payment ID!!!');
-    else if (existingPayment.status === payments.transfer) throw new Error('payment status is transfer');
+    else if (existingPayment.status === payments.approved) throw new Error('You cannot delete approved payment!!!');
+    else if (existingPayment.status === payments.notApproved) throw new Error('You cannot delete not approved payment!!!');
 
     const paymentToDelete = await repository.updateOne(
         PaymentModel,

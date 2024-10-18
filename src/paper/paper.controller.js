@@ -8,7 +8,8 @@ const {
 
 module.exports.getPaperById = async (req, res) => {
   try {
-      const data = await service.getPaperByIdToFrontEnd(req.params);
+    console.log("request params: " + req.params)
+      const data = await service.getPaperByIdToFrontEnd(req.params.paper_id, req.params.user_id);
       return successWithData(data, res);
   } catch (error) {
       return customError(error.message, res);

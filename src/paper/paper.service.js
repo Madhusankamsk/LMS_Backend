@@ -165,11 +165,27 @@ module.exports.getPaperByFolderId = async (id) => {
   return papers;
 };
 
-module.exports.getPaperByIdToFrontEnd = async (id) => {
+module.exports.getPaperByIdToFrontEnd = async (paper_id, user_id) => {
+  const paper = await repository.findOne(PaperModel, {
+    _id: new mongoose.Types.ObjectId(paper_id),
+    is_deleted: false,
+  });
+
+  if (!paper) {
+    throw new Error("Paper not found!!!");
+  }
+
+  if (user_id !== paper.teacher_id.toString()) {
+  const existingPaperEnroll = await paperEnrollService.getEnrollPaperByStudentIdWithPaperID(paper_id, user_id);
+  if (!existingPaperEnroll) {
+    throw new Error("You are not enrolled in this paper!!!");
+  }
+  }
+
   const pipeline = [
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(id),
+        _id: new mongoose.Types.ObjectId(paper_id),
         is_deleted: false,
       },
     },
@@ -654,6 +670,9 @@ module.exports.togglePaper = async (id) => {
 module.exports.deletePaper = async (id) => {
   const existingPaper = await this.getPaperById(id.toString());
   if (!existingPaper) throw new Error("Invalid paper ID!!!");
+
+  const existingPaperEnroll = await paperEnrollService.getEnrollPaperByPaperId(id);
+  if (existingPaperEnroll) throw new Error("Cannot delete paper. It is enrolled by students!!!");
 
   const paperToDelete = await repository.updateOne(
     PaperModel,

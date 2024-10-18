@@ -2,14 +2,12 @@ const joi = require('joi')
 const joiConfig = require('../../config/joiConfig')
 
 module.exports.getEnrollPaperById = joi.object({
-    //id: joi.string().required().max(24).min(24),
     paper_id: joi.string().required().max(24).min(24),
     user_id: joi.string().required().max(24).min(24),
 });
 
 module.exports.getEnrollPapers = (maxLimit) => {
     return joi.object().keys({
-        //paper_id: joi.string().alphanum().min(24).max(24),
         user_id: joi.string().alphanum().min(24).max(24),
         teacher_id: joi.string().alphanum().min(24).max(24),
         ...joiConfig.pagination(maxLimit),
@@ -26,10 +24,10 @@ module.exports.updateEnrollPaper = joi.object({
     paper_id: joi.string().max(24).min(24),
     user_id: joi.string().max(24).min(24),
     student_link: joi.string(),
-    teacher_link: joi.string(),
-    mark: joi.number(),
+    teacher_link: joi.string().allow(null),
+    mark: joi.number().allow(null),
     answer_time: joi.string(),
-    feedback: joi.string(),
+    feedback: joi.string().allow(null),
     status: joi.string().required(),
     student_answer_time: joi.number(),
 })

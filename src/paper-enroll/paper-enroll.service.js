@@ -19,6 +19,15 @@ const paperService = require("../paper/paper.service");
 const { studentAnswers } = require("../../config/permissionConfig");
 const { sendDefualtMail } = require("../../mails/mails.service");
 
+
+module.exports.getEnrollPaperByPaperId = async (paper_id) => {
+  const enrollPaper = await repository.findOne(PaperEnrollModel, {
+    paper_id: new mongoose.Types.ObjectId(paper_id),
+    is_deleted: false,
+  });
+  return enrollPaper;
+};
+
 module.exports.getEnrollPaperById = async (id) => {
   const enrollPaper = await repository.findOne(PaperEnrollModel, {
     _id: new mongoose.Types.ObjectId(id),
@@ -27,7 +36,10 @@ module.exports.getEnrollPaperById = async (id) => {
   return enrollPaper;
 };
 
-module.exports.getEnrollPaperByStudentIdWithPaperID = async (paperId,userId) => {
+module.exports.getEnrollPaperByStudentIdWithPaperID = async (
+  paperId,
+  userId
+) => {
   const enrollPaper = await repository.findOne(PaperEnrollModel, {
     paper_id: new mongoose.Types.ObjectId(paperId),
     user_id: new mongoose.Types.ObjectId(userId),
@@ -246,9 +258,12 @@ module.exports.createEnrollPaper = async (body) => {
     body.paper_id,
     body.user_id
   );
+
   if (existinePaperEnroll) {
     throw new Error("User is already enrolled to this paper!!!");
   }
+
+  console.log(existingUser.price, " ", existingPaper.price);
 
   if (existingUser.price < existingPaper.price) {
     throw new Error("Your balance is not sufficient to purchase this paper!!!");
@@ -292,6 +307,18 @@ module.exports.updateEnrollPaper = async (body) => {
     }
   }
 
+  if (body.student_link) {
+    if (existingPaperEnroll.student_link) {
+      throw new Error("You have already updated the answer!!!");
+    }
+  }
+
+  if (body.status && body.status === studentAnswers.submitted) {
+    if (!(body.mark || existingPaperEnroll.mark)) {
+      throw new Error("Mark is required when submitting!");
+    }
+  }
+
   let enrollPaperToUpdate = await repository.updateOne(
     PaperEnrollModel,
     {
@@ -313,7 +340,9 @@ module.exports.updateEnrollPaper = async (body) => {
       }
 
       if (enrollPaperToUpdate.paper_id) {
-        const paper = await paperService.getPaperById(enrollPaperToUpdate.paper_id);
+        const paper = await paperService.getPaperById(
+          enrollPaperToUpdate.paper_id
+        );
         if (!paper) {
           throw new Error("Paper ID not valid!!!");
         }
