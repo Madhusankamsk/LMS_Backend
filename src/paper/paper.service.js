@@ -16,6 +16,7 @@ const categoryService = require("../categories/category.service");
 const folderService = require("../folder/folder.service");
 const userService = require("../user/user.service");
 const paperEnrollService = require("../paper-enroll/paper-enroll.service");
+const { studentAnswers, userRoles } = require("../../config/permissionConfig");
 
 module.exports.togglePapersBySubject = async (subject_id, SubjectInactiveDate) => {
   const existingSubject = await subjectService.getSubjectById(subject_id);
@@ -175,11 +176,14 @@ module.exports.getPaperByIdToFrontEnd = async (paper_id, user_id) => {
     throw new Error("Paper not found!!!");
   }
 
+  let existingPaperEnroll;
+  let isToDoStudent = false;
   if (user_id !== paper.teacher_id.toString()) {
-  const existingPaperEnroll = await paperEnrollService.getEnrollPaperByStudentIdWithPaperID(paper_id, user_id);
-  if (!existingPaperEnroll) {
-    throw new Error("You are not enrolled in this paper!!!");
-  }
+    existingPaperEnroll = await paperEnrollService.getEnrollPaperByStudentIdWithPaperID(paper_id, user_id);
+    if (!existingPaperEnroll) {
+      throw new Error("You are not enrolled in this paper!!!");
+    }
+    isToDoStudent = existingPaperEnroll.status === studentAnswers.toDoStudent;
   }
 
   const pipeline = [
@@ -201,7 +205,7 @@ module.exports.getPaperByIdToFrontEnd = async (paper_id, user_id) => {
           },
           {
             $project: {
-              _id:1,
+              _id: 1,
               email: 1,
               full_name: { $concat: ["$first_name", " ", "$last_name"] },
             },
@@ -278,10 +282,24 @@ module.exports.getPaperByIdToFrontEnd = async (paper_id, user_id) => {
     },
     {
       $project: {
-        teacher_id: 0,
-        subject_id: 0,
-        category_id: 0,
-        folder_id: 0,
+        _id: 1,
+        title: 1,
+        duration: 1,
+        publish_date: 1,
+        price: 1,
+        rate_value: 1,
+        paper_link: 1,
+        description: 1,
+        is_active: 1,
+        inactive_date: 1,
+        created_at: 1,
+        updated_at: 1,
+        subject: 1,
+        category: 1,
+        folder: 1,
+        teacher: 1,
+        video_link: { $cond: { if: { $eq: [isToDoStudent, false] }, then: "$video_link", else: "$$REMOVE" } },
+        answer_link: { $cond: { if: { $eq: [isToDoStudent, false] }, then: "$answer_link", else: "$$REMOVE" } },
       },
     },
   ];
@@ -563,13 +581,25 @@ module.exports.createPaper = async (body) => {
   const existingUser = await userService.getUserById(body.teacher_id); // need to check if teacher id
   if (!existingUser) {
     throw new Error("User ID not valid!!!");
-  }
+  } else if (existingUser.role !== userRoles.techer) {
+    throw new Error("You are not a teacher!!!");
+  } 
 
-  if (body.folder_id) {
+  if (body.folder_id && body.folder_id !== "") {
     const existingFolder = await folderService.getFolderById(body.folder_id);
     if (!existingFolder) {
       throw new Error("Folder ID not valid!!!");
     }
+  }
+
+  if (body.video_link) {
+    const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/;
+    const match = body.video_link.match(youtubeRegex);
+    if (match && match[1]) {
+      const videoId = match[1].split('&')[0]; // Remove any additional parameters
+      body.video_link = `https://www.youtube.com/embed/${videoId}`;
+      body.video_link = body.video_link.split('=').pop().split('&')[0];
+    } 
   }
 
   const newPaperToSave = new PaperModel(body);
@@ -609,6 +639,15 @@ module.exports.updatePaper = async (body) => {
     const existingFolder = await folderService.getFolderById(body.folder_id);
     if (!existingFolder) {
       throw new Error("Folder ID not valid!!!");
+    }
+  }
+
+  if (body.video_link) {
+    const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/;
+    const match = body.video_link.match(youtubeRegex);
+    if (match && match[1]) {
+      const videoId = match[1].split('&')[0]; // Remove any additional parameters
+      body.video_link = `https://www.youtube.com/embed/${videoId}`;
     }
   }
 
