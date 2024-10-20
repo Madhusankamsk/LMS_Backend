@@ -648,7 +648,8 @@ module.exports.updatePaper = async (body) => {
     if (match && match[1]) {
       const videoId = match[1].split('&')[0]; // Remove any additional parameters
       body.video_link = `https://www.youtube.com/embed/${videoId}`;
-    }
+      body.video_link = body.video_link.split('=').pop().split('&')[0];
+    } 
   }
 
   let paperToUpdate = await repository.updateOne(

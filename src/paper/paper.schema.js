@@ -25,11 +25,11 @@ module.exports.createPaper = joi.object({
     rate_value: joi.number(),
     paper_link: joi.string().required().min(1),
     display_image_link: joi.string().required().min(1),
-    answer_link: joi.string().required().min(1),
-    video_link: joi.string().required().min(1),
+    answer_link: joi.string().min(1),
+    video_link: joi.string().min(1),
     description: joi.string().required().min(1),
     price: joi.number().required().min(0),
-})
+}).or('answer_link', 'video_link')
 
 module.exports.updatePaper = joi.object({
     _id: joi.string().max(24).min(24).required(),
