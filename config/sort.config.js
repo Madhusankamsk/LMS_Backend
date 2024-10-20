@@ -7,5 +7,11 @@ module.exports = {
       update_at: {
         "-1": "updated_at",
       },
+      name: {
+        "1": "name",
+      },
+      title: {
+        "1": "title",
+      },
     },
   };

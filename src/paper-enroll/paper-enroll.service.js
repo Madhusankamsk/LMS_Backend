@@ -16,7 +16,7 @@ const categoryService = require("../categories/category.service");
 const folderService = require("../folder/folder.service");
 const userService = require("../user/user.service");
 const paperService = require("../paper/paper.service");
-const { studentAnswers } = require("../../config/permissionConfig");
+const { studentAnswers , userRoles } = require("../../config/permissionConfig");
 const { sendDefualtMail } = require("../../mails/mails.service");
 
 
@@ -88,13 +88,12 @@ module.exports.getEnrollPapers = async (body) => {
         paper_id: new mongoose.Types.ObjectId(paper_id),
       };
     } else {
-      throw new Error("Invalid paper _id");
+      throw new Error("Invalid paper ID");
     }
   }
 
   if (user_id) {
     const existingUser = await userService.getUserById(user_id);
-    console.log("exsisting user: " + existingUser);
 
     if (existingUser) {
       matchQuery = {
@@ -102,7 +101,16 @@ module.exports.getEnrollPapers = async (body) => {
         user_id: new mongoose.Types.ObjectId(user_id),
       };
     } else {
-      throw new Error("Invalid user _id");
+      throw new Error("Invalid User ID");
+    }
+  }
+
+  if (teacher_id) {
+    const existingTeacher = await userService.getUserById(teacher_id);
+    if (!existingTeacher) {
+      throw new Error("Invalid User ID");
+    } else if (existingTeacher.role !== userRoles.techer) {
+      throw new Error("You are not teacher!!!");
     }
   }
 

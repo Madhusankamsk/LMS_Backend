@@ -109,7 +109,7 @@ schema.methods.setPassword = function (password) {
         .toString("hex");
 }
 
-schema.index({ email: 1, school: 1 }); 
+schema.index({ createdAt: -1 }); 
 
 const model = mongoose.model("users", schema);
 module.exports = model;

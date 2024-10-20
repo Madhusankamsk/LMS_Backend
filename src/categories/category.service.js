@@ -116,7 +116,7 @@ module.exports.getCategories = async (body) => {
 
     const sortingOrder =
         order === sortingConfig.sortingOrder.descending || !order ? -1 : 1
-    const sortingColumn = sortingConfig.sortingColumn.update_at[column];
+    const sortingColumn = sortingConfig.sortingColumn.name[column];
 
     let matchQuery = {
         is_deleted: {
@@ -130,7 +130,7 @@ module.exports.getCategories = async (body) => {
 
     const sortQuery = {
         [sortingColumn]: sortingOrder,
-        updated_at: -1,
+        name: 1,
     }
     
     if (subject_id) {

@@ -330,7 +330,7 @@ module.exports.getPapers = async (body) => {
 
   const sortingOrder =
     order === sortingConfig.sortingOrder.descending || !order ? -1 : 1;
-  const sortingColumn = sortingConfig.sortingColumn.update_at[column];
+  const sortingColumn = sortingConfig.sortingColumn.title[column];
 
   let matchQuery = {
     is_deleted: {
@@ -344,7 +344,7 @@ module.exports.getPapers = async (body) => {
 
   const sortQuery = {
     [sortingColumn]: sortingOrder,
-    updated_at: -1,
+    title: 1,
   };
 
   if (parent_id) {

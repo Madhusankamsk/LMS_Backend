@@ -79,7 +79,7 @@ const schema = new mongoose.Schema(
     { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )
 
-schema.index({ title: 1 }) // Indexing
+//schema.index({ title: 1 }) // Indexing
 
 const model = mongoose.model('papers', schema)
 module.exports = model
