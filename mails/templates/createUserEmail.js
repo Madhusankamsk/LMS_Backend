@@ -84,13 +84,7 @@ module.exports.createUser = (newUser) => {
       <div class="content">
         <p><b>Hello ${name},</b></p>
         <p>
-          Your account has been successfully created. To access your account, please use the following password for your initial login:
-        </p>
-        <div class="highlight-container">
-          <span class="highlight">${new_password}</span>
-        </div>
-        <p>
-          For your security, we recommend changing your password after your first login.
+          Your account has been successfully created.
         </p>
       </div>
       <div class="footer">
