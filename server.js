@@ -62,17 +62,16 @@ server.use("/api", require("./routes"));
 // Database Connection initiation
 const { isProduction } = config;
 if (isProduction) {
-    mongoose.connect(`${config.database}`, {
-      // useUnifiedTopology: true,
-      // useNewUrlParser: true,
-    });
-  } else {
-    mongoose.connect(`${config.testDatabase}`, {
-      // useUnifiedTopology: true,
-      // useNewUrlParser: true,
-    });
-    mongoose.set("debug", true);
-  }
+    mongoose.connect(`${config.database}`)
+      .then(() => console.log("Connected to production database"))
+      .catch((err) => console.error("Production DB connection error:", err));
+} else {
+    mongoose.connect(`${config.testDatabase}`)
+      .then(() => console.log("Connected to test database"))
+      .catch((err) => console.error("Test DB connection error:", err));
+    
+    mongoose.set("debug", true); // Enable mongoose debug mode in non-production
+}
 
 const httpServer = http.createServer(server);
 
@@ -85,8 +84,8 @@ httpServer.listen(serverPort, (err) => {
   }
 });
 
-// Set up a cron job to print "Hello, World" every 5 minutes
-const printHelloWorldJob = new CronJob('*/1 * * * *', function() {
+// Set up a cron job to print "Hello, World" every 1 minute
+const printHelloWorldJob = new CronJob('*/5 * * * *', function() {
   console.log("Hello, World");
 });
 
@@ -94,3 +93,4 @@ const printHelloWorldJob = new CronJob('*/1 * * * *', function() {
 printHelloWorldJob.start();
 
 module.exports = server;
+
