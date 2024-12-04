@@ -236,7 +236,7 @@ module.exports.loginUser = async (body) => {
             )
         }
 
-        if (user.status !== user.registed) {
+        if (user.status !== userStatus.registed) {
             throw new Error('Please complete the registration process!!!')
         } 
 
