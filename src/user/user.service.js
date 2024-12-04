@@ -236,6 +236,10 @@ module.exports.loginUser = async (body) => {
             )
         }
 
+        if (user.status !== user.registed) {
+            throw new Error('Please complete the registration process!!!')
+        } 
+
         const passwordValidity = validatePassword(
             body.password,
             user.password,
